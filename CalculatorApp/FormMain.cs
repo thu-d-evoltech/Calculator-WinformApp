@@ -16,5 +16,18 @@ namespace CalculatorApp
         {
             InitializeComponent();
         }
+
+        //数を入力する機能
+        private void Button_Click(object sender, EventArgs e)
+        {
+            Button num = (Button)sender;
+            if (num.Text == ".")
+            {
+                if (!textDisplay.Text.Contains("."))
+                    textDisplay.Text += num.Text;
+            }
+            else
+                textDisplay.Text += num.Text;
+        }
     }
 }
