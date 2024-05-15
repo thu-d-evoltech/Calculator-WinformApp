@@ -44,12 +44,13 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.button13 = new System.Windows.Forms.Button();
+            this.buttonEquals = new System.Windows.Forms.Button();
             this.button = new System.Windows.Forms.Button();
             this.button0 = new System.Windows.Forms.Button();
             this.buttonDot = new System.Windows.Forms.Button();
             this.buttonC = new System.Windows.Forms.Button();
             this.buttonDel = new System.Windows.Forms.Button();
+            this.resultDisplay = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // textDisplay
@@ -58,14 +59,13 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textDisplay.BackColor = System.Drawing.SystemColors.HighlightText;
             this.textDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textDisplay.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textDisplay.Location = new System.Drawing.Point(15, 21);
+            this.textDisplay.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.textDisplay.Location = new System.Drawing.Point(15, 23);
             this.textDisplay.Multiline = true;
             this.textDisplay.Name = "textDisplay";
             this.textDisplay.ReadOnly = true;
-            this.textDisplay.Size = new System.Drawing.Size(374, 85);
+            this.textDisplay.Size = new System.Drawing.Size(374, 90);
             this.textDisplay.TabIndex = 0;
-            this.textDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // buttonMul
             // 
@@ -209,6 +209,7 @@
             this.buttonAdd.TabIndex = 17;
             this.buttonAdd.Text = "+";
             this.buttonAdd.UseVisualStyleBackColor = true;
+            this.buttonAdd.Click += new System.EventHandler(this.buttonAdd_Click);
             // 
             // button3
             // 
@@ -249,19 +250,20 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.Button_Click);
             // 
-            // button13
+            // buttonEquals
             // 
-            this.button13.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.button13.Font = new System.Drawing.Font("Times New Roman", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button13.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.button13.Location = new System.Drawing.Point(303, 395);
-            this.button13.MaximumSize = new System.Drawing.Size(90, 61);
-            this.button13.MinimumSize = new System.Drawing.Size(90, 61);
-            this.button13.Name = "button13";
-            this.button13.Size = new System.Drawing.Size(90, 61);
-            this.button13.TabIndex = 13;
-            this.button13.Text = "＝";
-            this.button13.UseVisualStyleBackColor = false;
+            this.buttonEquals.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.buttonEquals.Font = new System.Drawing.Font("Times New Roman", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonEquals.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.buttonEquals.Location = new System.Drawing.Point(303, 395);
+            this.buttonEquals.MaximumSize = new System.Drawing.Size(90, 61);
+            this.buttonEquals.MinimumSize = new System.Drawing.Size(90, 61);
+            this.buttonEquals.Name = "buttonEquals";
+            this.buttonEquals.Size = new System.Drawing.Size(90, 61);
+            this.buttonEquals.TabIndex = 13;
+            this.buttonEquals.Text = "＝";
+            this.buttonEquals.UseVisualStyleBackColor = false;
+            this.buttonEquals.Click += new System.EventHandler(this.buttonEquals_Click);
             // 
             // button
             // 
@@ -313,6 +315,7 @@
             this.buttonC.TabIndex = 26;
             this.buttonC.Text = "C";
             this.buttonC.UseVisualStyleBackColor = true;
+            this.buttonC.Click += new System.EventHandler(this.buttonC_Click);
             // 
             // buttonDel
             // 
@@ -326,6 +329,22 @@
             this.buttonDel.Size = new System.Drawing.Size(90, 61);
             this.buttonDel.TabIndex = 25;
             this.buttonDel.UseVisualStyleBackColor = true;
+            // 
+            // resultDisplay
+            // 
+            this.resultDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.resultDisplay.BackColor = System.Drawing.SystemColors.HighlightText;
+            this.resultDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.resultDisplay.Enabled = false;
+            this.resultDisplay.Font = new System.Drawing.Font("MS UI Gothic", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.resultDisplay.Location = new System.Drawing.Point(21, 83);
+            this.resultDisplay.Name = "resultDisplay";
+            this.resultDisplay.ReadOnly = true;
+            this.resultDisplay.Size = new System.Drawing.Size(362, 25);
+            this.resultDisplay.TabIndex = 0;
+            this.resultDisplay.Text = "0";
+            this.resultDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // 電卓
             // 
@@ -349,10 +368,11 @@
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.button13);
+            this.Controls.Add(this.buttonEquals);
             this.Controls.Add(this.button);
             this.Controls.Add(this.button0);
             this.Controls.Add(this.buttonDot);
+            this.Controls.Add(this.resultDisplay);
             this.Controls.Add(this.textDisplay);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
@@ -383,12 +403,13 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.Button buttonEquals;
         private System.Windows.Forms.Button button;
         private System.Windows.Forms.Button button0;
         private System.Windows.Forms.Button buttonDot;
         private System.Windows.Forms.Button buttonDel;
         private System.Windows.Forms.Button buttonC;
+        private System.Windows.Forms.TextBox resultDisplay;
     }
 }
 

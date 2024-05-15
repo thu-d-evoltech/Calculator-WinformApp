@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CalculatorApp
@@ -16,7 +9,8 @@ namespace CalculatorApp
         {
             InitializeComponent();
         }
-
+        float data1, data2;
+        String Calculation;
         //数を入力する機能
         private void Button_Click(object sender, EventArgs e)
         {
@@ -28,6 +22,28 @@ namespace CalculatorApp
             }
             else
                 textDisplay.Text += num.Text;
+        }
+
+        private void buttonAdd_Click(object sender, EventArgs e)
+        {
+            Calculation = "Add";
+            data1 = float.Parse(textDisplay.Text);
+            textDisplay.Clear();
+        }
+
+        private void buttonEquals_Click(object sender, EventArgs e)
+        {
+            if (Calculation == "Add")
+            {
+                data2 = data1 + float.Parse(textDisplay.Text);
+                resultDisplay.Text = data2.ToString();
+            }
+        }
+
+        private void buttonC_Click(object sender, EventArgs e)
+        {
+            textDisplay.Clear();
+            resultDisplay.Clear();
         }
     }
 }
