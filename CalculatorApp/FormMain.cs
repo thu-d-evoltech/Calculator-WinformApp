@@ -3,16 +3,18 @@ using System.Windows.Forms;
 
 namespace CalculatorApp
 {
-    public partial class 電卓 : Form
+    public partial class Calculator : Form
     {
-        public 電卓()
+        public Calculator()
         {
             InitializeComponent();
         }
-        float data1, data2;
-        String Calculation;
+
+        float data, result;
+        String calculation;
+
         //数を入力する機能
-        private void Button_Click(object sender, EventArgs e)
+        private void buttonNumber_Click(object sender, EventArgs e)
         {
             Button num = (Button)sender;
             if (num.Text == ".")
@@ -24,26 +26,60 @@ namespace CalculatorApp
                 textDisplay.Text += num.Text;
         }
 
-        private void buttonAdd_Click(object sender, EventArgs e)
+        private void buttonCalculation_Click(object sender, EventArgs e)
         {
-            Calculation = "Add";
-            data1 = float.Parse(textDisplay.Text);
+            Button num = (Button)sender;
+            calculation = num.Text;
+            data = float.Parse(textDisplay.Text);
             textDisplay.Clear();
+            resultDisplay.Text = data.ToString() + calculation;
         }
 
         private void buttonEquals_Click(object sender, EventArgs e)
         {
-            if (Calculation == "Add")
+            switch (calculation)
             {
-                data2 = data1 + float.Parse(textDisplay.Text);
-                resultDisplay.Text = data2.ToString();
+                case "+":
+                    result = data + float.Parse(textDisplay.Text);
+                    resultDisplay.Text = "=" + result.ToString();
+                    break;
+                case "-":
+                    result = data - float.Parse(textDisplay.Text);
+                    resultDisplay.Text = "=" + result.ToString();
+                    break;
+                case "x":
+                    result = data * float.Parse(textDisplay.Text);
+                    resultDisplay.Text = "=" + result.ToString();
+                    break;
+                case "÷":
+                    result = data / float.Parse(textDisplay.Text);
+                    resultDisplay.Text = "=" + result.ToString();
+                    break;
             }
         }
 
+        private void buttonCE_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonDel_Click(object sender, EventArgs e)
+        {
+            if (textDisplay.Text.Length > 0)
+            {
+                textDisplay.Text = textDisplay.Text.Remove(textDisplay.Text.Length - 1, 1);
+            }
+        }
+
+        /// <summary>
+        /// ボタンCがクリックされたときの処理で、全てデータを消す
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonC_Click(object sender, EventArgs e)
         {
             textDisplay.Clear();
-            resultDisplay.Clear();
+            resultDisplay.Text = "0";
         }
     }
 }
