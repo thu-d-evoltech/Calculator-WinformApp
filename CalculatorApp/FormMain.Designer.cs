@@ -37,7 +37,7 @@
             this.buttonSubtract = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
-            this.buttonCE = new System.Windows.Forms.Button();
+            this.buttonPercent = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.buttonAdd = new System.Windows.Forms.Button();
@@ -50,7 +50,7 @@
             this.buttonDot = new System.Windows.Forms.Button();
             this.buttonC = new System.Windows.Forms.Button();
             this.buttonDel = new System.Windows.Forms.Button();
-            this.resultDisplay = new System.Windows.Forms.Label();
+            this.resultDisplay = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // textDisplay
@@ -60,12 +60,13 @@
             this.textDisplay.BackColor = System.Drawing.SystemColors.HighlightText;
             this.textDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textDisplay.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textDisplay.Location = new System.Drawing.Point(15, 23);
+            this.textDisplay.Location = new System.Drawing.Point(15, 62);
             this.textDisplay.Multiline = true;
             this.textDisplay.Name = "textDisplay";
             this.textDisplay.ReadOnly = true;
-            this.textDisplay.Size = new System.Drawing.Size(374, 90);
+            this.textDisplay.Size = new System.Drawing.Size(374, 44);
             this.textDisplay.TabIndex = 0;
+            this.textDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // buttonMultiply
             // 
@@ -161,19 +162,19 @@
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.buttonNumber_Click);
             // 
-            // buttonCE
+            // buttonPercent
             // 
-            this.buttonCE.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonCE.ForeColor = System.Drawing.Color.OrangeRed;
-            this.buttonCE.Location = new System.Drawing.Point(15, 127);
-            this.buttonCE.MaximumSize = new System.Drawing.Size(90, 61);
-            this.buttonCE.MinimumSize = new System.Drawing.Size(90, 61);
-            this.buttonCE.Name = "buttonCE";
-            this.buttonCE.Size = new System.Drawing.Size(90, 61);
-            this.buttonCE.TabIndex = 19;
-            this.buttonCE.Text = "CE";
-            this.buttonCE.UseVisualStyleBackColor = true;
-            this.buttonCE.Click += new System.EventHandler(this.buttonCE_Click);
+            this.buttonPercent.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonPercent.ForeColor = System.Drawing.Color.OrangeRed;
+            this.buttonPercent.Location = new System.Drawing.Point(15, 127);
+            this.buttonPercent.MaximumSize = new System.Drawing.Size(90, 61);
+            this.buttonPercent.MinimumSize = new System.Drawing.Size(90, 61);
+            this.buttonPercent.Name = "buttonPercent";
+            this.buttonPercent.Size = new System.Drawing.Size(90, 61);
+            this.buttonPercent.TabIndex = 19;
+            this.buttonPercent.Text = "%";
+            this.buttonPercent.UseVisualStyleBackColor = true;
+            this.buttonPercent.Click += new System.EventHandler(this.buttonPercent_Click);
             // 
             // button5
             // 
@@ -280,6 +281,7 @@
             this.button.TabIndex = 12;
             this.button.Text = "+/-";
             this.button.UseVisualStyleBackColor = true;
+            this.button.Click += new System.EventHandler(this.buttonNegate_Click);
             // 
             // button0
             // 
@@ -337,14 +339,18 @@
             // 
             // resultDisplay
             // 
-            this.resultDisplay.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.resultDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.resultDisplay.BackColor = System.Drawing.SystemColors.Control;
+            this.resultDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.resultDisplay.Font = new System.Drawing.Font("MS UI Gothic", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.resultDisplay.Location = new System.Drawing.Point(17, 75);
+            this.resultDisplay.Location = new System.Drawing.Point(15, 16);
+            this.resultDisplay.Multiline = true;
             this.resultDisplay.Name = "resultDisplay";
-            this.resultDisplay.Size = new System.Drawing.Size(369, 33);
+            this.resultDisplay.ReadOnly = true;
+            this.resultDisplay.Size = new System.Drawing.Size(374, 44);
             this.resultDisplay.TabIndex = 30;
-            this.resultDisplay.Text = "0";
-            this.resultDisplay.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.resultDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // Calculator
             // 
@@ -362,7 +368,7 @@
             this.Controls.Add(this.buttonSubtract);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.button6);
-            this.Controls.Add(this.buttonCE);
+            this.Controls.Add(this.buttonPercent);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.buttonAdd);
@@ -396,7 +402,7 @@
         private System.Windows.Forms.Button buttonSubtract;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button buttonCE;
+        private System.Windows.Forms.Button buttonPercent;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button buttonAdd;
@@ -409,7 +415,7 @@
         private System.Windows.Forms.Button buttonDot;
         private System.Windows.Forms.Button buttonDel;
         private System.Windows.Forms.Button buttonC;
-        private System.Windows.Forms.Label resultDisplay;
+        private System.Windows.Forms.TextBox resultDisplay;
     }
 }
 
