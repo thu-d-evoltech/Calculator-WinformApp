@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Windows.Forms;
 
 namespace CalculatorApp
@@ -16,76 +17,25 @@ namespace CalculatorApp
         /// <summary>
         /// 
         /// </summary>
-        float data, result;
-        String calculation;
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void buttonNumber_Click(object sender, EventArgs e)
+        private void button_Click(object sender, EventArgs e)
         {
-            Button num = (Button)sender;
-            if (num.Text == ".")
+            if(textDisplay.Text == "0")
             {
-                if (!textDisplay.Text.Contains("."))
-                    textDisplay.Text += num.Text;
+                textDisplay.Clear();
             }
-            else
-            {
-                textDisplay.Text += num.Text;
-            }
+            Button button = (Button)sender;
+            textDisplay.Text += button.Text;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonCalculation_Click(object sender, EventArgs e)
-        {
-            if (data != 0)
-            {
-                buttonEquals.PerformClick();
-            }
-            Button cal = (Button)sender;
-            calculation = cal.Text;
-            data = float.Parse(textDisplay.Text);
-            resultDisplay.Text = data.ToString() + calculation;
-            textDisplay.Clear();
-        }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void buttonEquals_Click(object sender, EventArgs e)
         {
-            switch (calculation)
-            {
-                case "+":
-                    result = data + float.Parse(textDisplay.Text);
-                    resultDisplay.Text = data.ToString() + calculation + float.Parse(textDisplay.Text) + " =";
-                    textDisplay.Text = result.ToString();
-                    break;
-                case "-":
-                    result = data - float.Parse(textDisplay.Text);
-                    resultDisplay.Text = data.ToString() + calculation + float.Parse(textDisplay.Text) + "=";
-                    textDisplay.Text = result.ToString();
-                    break;
-                case "x":
-                    result = data * float.Parse(textDisplay.Text);
-                    resultDisplay.Text = data.ToString() + calculation + float.Parse(textDisplay.Text) + "=";
-                    textDisplay.Text = result.ToString();
-                    break;
-                case "÷":
-                    result = data / float.Parse(textDisplay.Text);
-                    resultDisplay.Text = data.ToString() + calculation + float.Parse(textDisplay.Text) + "=";
-                    textDisplay.Text = result.ToString();
-                    break;
-            }
+            string equation = textDisplay.Text;
+            var result = new DataTable().Compute(equation, null);
+            resultDisplay.Text = "=" + result.ToString();
+            textDisplay.Text = result.ToString();
         }
 
         /// <summary>
@@ -115,9 +65,7 @@ namespace CalculatorApp
         private void buttonC_Click(object sender, EventArgs e)
         {
             textDisplay.Clear();
-            data = 0;
-            result = 0;
-            resultDisplay.Clear();
+            resultDisplay.Text = "0";
         }
 
         private void buttonPercent_Click(object sender, EventArgs e)
