@@ -6,13 +6,20 @@ namespace CalculatorApp
 {
     public partial class Calculator : Form
     {
+        private DataTable Calc;
+
         /// <summary>
         /// 
         /// </summary>
         public Calculator()
         {
+            Calc = new DataTable();
             InitializeComponent();
         }
+        float num1, num2;
+        int oprClickCount = 1;
+        bool isOprClick = false;
+        string opr;
 
         /// <summary>
         /// 
@@ -21,21 +28,41 @@ namespace CalculatorApp
         /// <param name="e"></param>
         private void button_Click(object sender, EventArgs e)
         {
-            if(textDisplay.Text == "0")
-            {
-                textDisplay.Clear();
-            }
             Button button = (Button)sender;
-            textDisplay.Text += button.Text;
+            if (!textDisplay.Text.Contains("."))
+            {
+                if (textDisplay.Text.Equals("0") && !button.Text.Equals("."))
+                {
+                    textDisplay.Text = button.Text;
+                }
+                else
+                {
+                    textDisplay.Text += button.Text;
+
+                }
+            }
+            else if (!button.Text.Equals("."))
+            {
+                textDisplay.Text += button.Text;
+            }
         }
 
-
+        private bool isOperator(Button button)
+        {
+            string buttonText = button.Text;
+            if(buttonText.Equals("+") || buttonText.Equals("-")  || 
+                buttonText.Equals("x")  || buttonText.Equals("÷"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         private void buttonEquals_Click(object sender, EventArgs e)
         {
-            string equation = textDisplay.Text;
-            var result = new DataTable().Compute(equation, null);
-            resultDisplay.Text = "=" + result.ToString();
-            textDisplay.Text = result.ToString();
+
         }
 
         /// <summary>
@@ -72,7 +99,7 @@ namespace CalculatorApp
         {
             if (float.TryParse(textDisplay.Text, out float inputValue))
             {
-                float percent = inputValue / 100; 
+                float percent = inputValue / 100;
                 textDisplay.Text = percent.ToString();
             }
             else

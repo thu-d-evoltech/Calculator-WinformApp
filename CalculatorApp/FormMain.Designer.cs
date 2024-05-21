@@ -77,7 +77,7 @@
             this.buttonMultiply.Name = "buttonMultiply";
             this.buttonMultiply.Size = new System.Drawing.Size(90, 61);
             this.buttonMultiply.TabIndex = 29;
-            this.buttonMultiply.Text = "*";
+            this.buttonMultiply.Text = "x";
             this.buttonMultiply.UseVisualStyleBackColor = true;
             this.buttonMultiply.Click += new System.EventHandler(this.button_Click);
             // 
@@ -104,7 +104,7 @@
             this.buttonDivide.Name = "buttonDivide";
             this.buttonDivide.Size = new System.Drawing.Size(90, 61);
             this.buttonDivide.TabIndex = 26;
-            this.buttonDivide.Text = "/";
+            this.buttonDivide.Text = "÷";
             this.buttonDivide.UseVisualStyleBackColor = true;
             this.buttonDivide.Click += new System.EventHandler(this.button_Click);
             // 
