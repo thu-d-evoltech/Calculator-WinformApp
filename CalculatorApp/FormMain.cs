@@ -60,7 +60,8 @@ namespace CalculatorApp
         private void buttonEquals_Click(object sender, EventArgs e)
         {
             string equation = textDisplay.Text;
-            var result = new DataTable().Compute(equation, null);
+            equation = equation.Replace("/", "÷").Replace("*", "x");
+            var result = new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null);
             if (equation.Contains("÷0"))
             {
                 resultDisplay.Text = "Error";
