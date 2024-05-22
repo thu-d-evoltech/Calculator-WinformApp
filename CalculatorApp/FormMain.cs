@@ -30,6 +30,11 @@ namespace CalculatorApp
             textDisplay.Text += num.Text;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonOperator_Click(object sender, EventArgs e)
         {
             Button opr = (Button)sender;
@@ -57,6 +62,11 @@ namespace CalculatorApp
             }
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonEquals_Click(object sender, EventArgs e)
         {
             string currentText = textDisplay.Text;
@@ -81,6 +91,55 @@ namespace CalculatorApp
                 textDisplay.Text = result.ToString();
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonDel_Click(object sender, EventArgs e)
+        {
+            if (textDisplay.Text.Length > 0)
+            {
+                textDisplay.Text = textDisplay.Text.Remove(textDisplay.Text.Length - 1, 1);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonNegate_Click(object sender, EventArgs e)
+        {
+            string currentValue = textDisplay.Text;
+
+            if (currentValue.StartsWith("-"))
+            {
+                textDisplay.Text = currentValue.Substring(1);
+            }
+            else
+            {
+                textDisplay.Text = "-" + currentValue;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonC_Click(object sender, EventArgs e)
+        {
+            textDisplay.Clear();
+            resultDisplay.Text = "0";
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonPercent_Click(object sender, EventArgs e)
         {
             if (float.TryParse(textDisplay.Text, out float inputValue))
