@@ -61,9 +61,16 @@ namespace CalculatorApp
         {
             string equation = textDisplay.Text;
             var result = new DataTable().Compute(equation, null);
-            resultDisplay.Text = "=" + result.ToString();
-            textDisplay.Text = result.ToString();
-
+            if (equation.Contains("÷0"))
+            {
+                resultDisplay.Text = "Error";
+                textDisplay.Clear();
+            }
+            else
+            {
+                resultDisplay.Text = "=" + result.ToString();
+                textDisplay.Text = result.ToString();
+            }
         }
         private void buttonPercent_Click(object sender, EventArgs e)
         {
