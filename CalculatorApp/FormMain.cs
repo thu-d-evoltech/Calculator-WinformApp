@@ -142,14 +142,34 @@ namespace CalculatorApp
         /// <param name="e"></param>
         private void buttonPercent_Click(object sender, EventArgs e)
         {
-            if (float.TryParse(textDisplay.Text, out float inputValue))
+            // textDisplay の現在のテキストを取得する
+            string currentValue = textDisplay.Text;
+
+            // 最後の演算子の位置を検索する
+            int lastOperatorIndex = Math.Max(currentValue.LastIndexOf("+"),
+                Math.Max(currentValue.LastIndexOf("-"),
+                Math.Max(currentValue.LastIndexOf("x"),
+                currentValue.LastIndexOf("÷"))));
+
+            // 演算子が見つからない場合、inputValue の値をパーセントに変換する
+            if (lastOperatorIndex == -1)
             {
-                float percent = inputValue / 100;
-                textDisplay.Text = percent.ToString();
+                if (float.TryParse(currentValue, out float inputValue))
+                {
+                    float percentValue = inputValue / 100;
+                    textDisplay.Text = percentValue.ToString();
+                }
             }
             else
             {
-                MessageBox.Show("数字を入力してください。");
+                // 演算子が見つける場合、演算子の後の数値を抽出すｒ
+                string lastNumber = currentValue.Substring(lastOperatorIndex + 1);
+                if (float.TryParse(lastNumber, out float lastValue))
+                {
+                    float percentValue = lastValue / 100;
+                    // 演算子の前の部分とパーセントの値を結合して textDisplay を更新する
+                    textDisplay.Text = currentValue.Substring(0, lastOperatorIndex + 1) + percentValue.ToString();
+                }
             }
         }
     }
