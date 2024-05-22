@@ -33,7 +33,28 @@ namespace CalculatorApp
         private void buttonOperator_Click(object sender, EventArgs e)
         {
             Button opr = (Button)sender;
-            textDisplay.Text += opr.Text;
+            string currentText = textDisplay.Text;
+            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
+            if ("+-x÷.".Contains(lastChar))
+            {
+                textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + opr.Text;
+            }
+            else if (currentText.Equals("") && opr.Text.Equals("."))
+            {
+                textDisplay.Text = $"0{opr.Text}";
+            }
+            else if (currentText.Equals("") && opr.Text.Equals("x"))
+            {
+                textDisplay.Clear();
+            }
+            else if (currentText.Equals("") && opr.Text.Equals("÷"))
+            {
+                textDisplay.Clear();
+            }
+            else
+            {
+                textDisplay.Text += opr.Text;
+            }
         }
         
         private void buttonEquals_Click(object sender, EventArgs e)
