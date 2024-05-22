@@ -1,100 +1,49 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace CalculatorApp
 {
     public partial class Calculator : Form
     {
-        private DataTable Calc;
-
         /// <summary>
-        /// 
+        /// Calculatorクラスのコンストラクタ
         /// </summary>
         public Calculator()
         {
-            Calc = new DataTable();
             InitializeComponent();
         }
-        float num1, num2;
-        int oprClickCount = 1;
-        bool isOprClick = false;
-        string opr;
 
         /// <summary>
-        /// 
+        /// 数字ボタンがクリックされたときに呼び出される
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void button_Click(object sender, EventArgs e)
+        /// <param name="sender">イベントを発生させたオブジェクト</param>
+        /// <param name="e">イベントデータを含む EventArgs</param>
+        private void buttonNumber_Click(object sender, EventArgs e)
         {
-            Button button = (Button)sender;
-            if (!textDisplay.Text.Contains("."))
+            Button num = (Button)sender;
+            if (textDisplay.Text == "0")
             {
-                if (textDisplay.Text.Equals("0") && !button.Text.Equals("."))
-                {
-                    textDisplay.Text = button.Text;
-                }
-                else
-                {
-                    textDisplay.Text += button.Text;
-
-                }
+                textDisplay.Clear();
             }
-            else if (!button.Text.Equals("."))
-            {
-                textDisplay.Text += button.Text;
-            }
+            textDisplay.Text += num.Text;
         }
 
-        private bool isOperator(Button button)
+        private void buttonOperator_Click(object sender, EventArgs e)
         {
-            string buttonText = button.Text;
-            if(buttonText.Equals("+") || buttonText.Equals("-")  || 
-                buttonText.Equals("x")  || buttonText.Equals("÷"))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            Button opr = (Button)sender;
+            textDisplay.Text += opr.Text;
         }
+        
         private void buttonEquals_Click(object sender, EventArgs e)
         {
+            string equation = textDisplay.Text;
+            var result = new DataTable().Compute(equation, null);
+            resultDisplay.Text = "=" + result.ToString();
+            textDisplay.Text = result.ToString();
 
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonDel_Click(object sender, EventArgs e)
-        {
-            if (textDisplay.Text.Length > 0)
-            {
-                textDisplay.Text = textDisplay.Text.Remove(textDisplay.Text.Length - 1, 1);
-            }
-        }
-
-        private void buttonNegate_Click(object sender, EventArgs e)
-        {
-            float negateValue = -float.Parse(textDisplay.Text);
-            textDisplay.Text = negateValue.ToString();
-        }
-
-        /// <summary>
-        /// ボタンCがクリックされたときの処理で、全てデータを消す
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonC_Click(object sender, EventArgs e)
-        {
-            textDisplay.Clear();
-            resultDisplay.Text = "0";
-        }
-
         private void buttonPercent_Click(object sender, EventArgs e)
         {
             if (float.TryParse(textDisplay.Text, out float inputValue))
