@@ -59,6 +59,14 @@ namespace CalculatorApp
         
         private void buttonEquals_Click(object sender, EventArgs e)
         {
+            string currentText = textDisplay.Text;
+            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
+
+            if ("+-x÷.".Contains(lastChar))
+            {
+                textDisplay.Text = currentText.Substring(0, currentText.Length - 1);
+            }
+
             string equation = textDisplay.Text;
             equation = equation.Replace("/", "÷").Replace("*", "x");
             var result = new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null);
