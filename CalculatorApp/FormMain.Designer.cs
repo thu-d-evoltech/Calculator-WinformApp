@@ -79,7 +79,7 @@
             this.buttonMultiply.TabIndex = 29;
             this.buttonMultiply.Text = "x";
             this.buttonMultiply.UseVisualStyleBackColor = true;
-            this.buttonMultiply.Click += new System.EventHandler(this.buttonOperator_Click);
+            this.buttonMultiply.Click += new System.EventHandler(this.btnOperation_Click);
             // 
             // button9
             // 
@@ -106,7 +106,7 @@
             this.buttonDivide.TabIndex = 26;
             this.buttonDivide.Text = "÷";
             this.buttonDivide.UseVisualStyleBackColor = true;
-            this.buttonDivide.Click += new System.EventHandler(this.buttonOperator_Click);
+            this.buttonDivide.Click += new System.EventHandler(this.btnOperation_Click);
             // 
             // button8
             // 
@@ -133,7 +133,7 @@
             this.buttonSubtract.TabIndex = 24;
             this.buttonSubtract.Text = "-";
             this.buttonSubtract.UseVisualStyleBackColor = true;
-            this.buttonSubtract.Click += new System.EventHandler(this.buttonOperator_Click);
+            this.buttonSubtract.Click += new System.EventHandler(this.btnOperation_Click);
             // 
             // button7
             // 
@@ -213,7 +213,7 @@
             this.buttonAdd.TabIndex = 17;
             this.buttonAdd.Text = "+";
             this.buttonAdd.UseVisualStyleBackColor = true;
-            this.buttonAdd.Click += new System.EventHandler(this.buttonOperator_Click);
+            this.buttonAdd.Click += new System.EventHandler(this.btnOperation_Click);
             // 
             // button3
             // 
@@ -306,7 +306,7 @@
             this.buttonDot.TabIndex = 10;
             this.buttonDot.Text = ".";
             this.buttonDot.UseVisualStyleBackColor = true;
-            this.buttonDot.Click += new System.EventHandler(this.buttonOperator_Click);
+            this.buttonDot.Click += new System.EventHandler(this.buttonDot_Click);
             // 
             // buttonC
             // 

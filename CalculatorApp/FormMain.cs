@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
@@ -14,12 +15,80 @@ namespace CalculatorApp
         {
             InitializeComponent();
         }
+        string Operation;
 
-        /// <summary>
-        /// 数字ボタンがクリックされたときに呼び出される
-        /// </summary>
-        /// <param name="sender">イベントを発生させたオブジェクト</param>
-        /// <param name="e">イベントデータを含む EventArgs</param>
+        private void buttonDel_Click(object sender, EventArgs e)
+        {
+            if (textDisplay.Text.Length > 0)
+            {
+                textDisplay.Text = textDisplay.Text.Remove(textDisplay.Text.Length - 1, 1);
+            }
+        }
+
+        private void buttonNegate_Click(object sender, EventArgs e)
+        {
+            string inputValue = textDisplay.Text;
+
+            if (inputValue.StartsWith("-"))
+            {
+                textDisplay.Text = inputValue.Substring(1);
+            }
+            else
+            {
+                textDisplay.Text = "-" + inputValue;
+            }
+        }
+
+        private void buttonC_Click(object sender, EventArgs e)
+        {
+            textDisplay.Clear();
+            resultDisplay.Text = "0";
+        }
+
+        private void buttonDot_Click(object sender, EventArgs e)
+        {
+            Button dot = (Button)sender;
+            string currentText = textDisplay.Text;
+            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
+
+            if ("+-x÷.".Contains(lastChar))
+            {
+                textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + dot.Text;
+            }
+            else
+            {
+                textDisplay.Text += dot.Text;
+            }
+        }
+
+        private void buttonPercent_Click(object sender, EventArgs e)
+        {
+            string currentValue = textDisplay.Text;
+
+            int lastOperatorIndex = Math.Max(currentValue.LastIndexOf("+"),
+                Math.Max(currentValue.LastIndexOf("-"),
+                Math.Max(currentValue.LastIndexOf("x"),
+                currentValue.LastIndexOf("÷"))));
+
+            if (lastOperatorIndex == -1)
+            {
+                if (double.TryParse(currentValue, out double inputValue))
+                {
+                    double percentValue = inputValue / 100;
+                    textDisplay.Text = percentValue.ToString();
+                }
+            }
+            else
+            {
+                string lastNumber = currentValue.Substring(lastOperatorIndex + 1);
+                if (double.TryParse(lastNumber, out double lastValue))
+                {
+                    double percentValue = lastValue / 100;
+                    textDisplay.Text = currentValue.Substring(0, lastOperatorIndex + 1) + percentValue.ToString();
+                }
+            }
+        }
+
         private void buttonNumber_Click(object sender, EventArgs e)
         {
             Button num = (Button)sender;
@@ -30,48 +99,31 @@ namespace CalculatorApp
             textDisplay.Text += num.Text;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonOperator_Click(object sender, EventArgs e)
+        private void btnOperation_Click(object sender, EventArgs e)
         {
             Button opr = (Button)sender;
+            Operation = opr.Text;
             string currentText = textDisplay.Text;
             string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
+
             if ("+-x÷.".Contains(lastChar))
             {
-                textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + opr.Text;
+                textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + Operation;
             }
-            else if (currentText.Equals("") && opr.Text.Equals("."))
-            {
-                textDisplay.Text = $"0{opr.Text}";
-            }
-            else if (currentText.Equals("") && opr.Text.Equals("x"))
-            {
-                textDisplay.Clear();
-            }
-            else if (currentText.Equals("") && opr.Text.Equals("÷"))
+            else if (currentText.Equals("") && (Operation.Contains("÷") || Operation.Contains("x")))
             {
                 textDisplay.Clear();
             }
             else
             {
-                textDisplay.Text += opr.Text;
+                textDisplay.Text += Operation;
             }
         }
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+
         private void buttonEquals_Click(object sender, EventArgs e)
         {
             string currentText = textDisplay.Text;
             string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
-
             if ("+-x÷.".Contains(lastChar))
             {
                 textDisplay.Text = currentText.Substring(0, currentText.Length - 1);
@@ -79,97 +131,26 @@ namespace CalculatorApp
 
             string equation = textDisplay.Text;
             equation = equation.Replace("/", "÷").Replace("*", "x");
-            var result = new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null);
-            if (equation.Contains("÷0"))
+
+            try
+            {
+                var result = new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null);
+
+                if (equation.Contains("÷0") && !equation.Contains("÷0."))
+                {
+                    resultDisplay.Text = "Error";
+                    textDisplay.Clear();
+                }
+                else
+                {
+                    textDisplay.Text = result.ToString();
+                    resultDisplay.Text = "=" + textDisplay.Text;
+                }
+            }
+            catch (DivideByZeroException)
             {
                 resultDisplay.Text = "Error";
                 textDisplay.Clear();
-            }
-            else
-            {
-                resultDisplay.Text = "=" + result.ToString();
-                textDisplay.Text = result.ToString();
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonDel_Click(object sender, EventArgs e)
-        {
-            if (textDisplay.Text.Length > 0)
-            {
-                textDisplay.Text = textDisplay.Text.Remove(textDisplay.Text.Length - 1, 1);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonNegate_Click(object sender, EventArgs e)
-        {
-            string currentValue = textDisplay.Text;
-
-            if (currentValue.StartsWith("-"))
-            {
-                textDisplay.Text = currentValue.Substring(1);
-            }
-            else
-            {
-                textDisplay.Text = "-" + currentValue;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonC_Click(object sender, EventArgs e)
-        {
-            textDisplay.Clear();
-            resultDisplay.Text = "0";
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void buttonPercent_Click(object sender, EventArgs e)
-        {
-            // textDisplay の現在のテキストを取得する
-            string currentValue = textDisplay.Text;
-
-            // 最後の演算子の位置を検索する
-            int lastOperatorIndex = Math.Max(currentValue.LastIndexOf("+"),
-                Math.Max(currentValue.LastIndexOf("-"),
-                Math.Max(currentValue.LastIndexOf("x"),
-                currentValue.LastIndexOf("÷"))));
-
-            // 演算子が見つからない場合、inputValue の値をパーセントに変換する
-            if (lastOperatorIndex == -1)
-            {
-                if (float.TryParse(currentValue, out float inputValue))
-                {
-                    float percentValue = inputValue / 100;
-                    textDisplay.Text = percentValue.ToString();
-                }
-            }
-            else
-            {
-                // 演算子が見つける場合、演算子の後の数値を抽出すｒ
-                string lastNumber = currentValue.Substring(lastOperatorIndex + 1);
-                if (float.TryParse(lastNumber, out float lastValue))
-                {
-                    float percentValue = lastValue / 100;
-                    // 演算子の前の部分とパーセントの値を結合して textDisplay を更新する
-                    textDisplay.Text = currentValue.Substring(0, lastOperatorIndex + 1) + percentValue.ToString();
-                }
             }
         }
     }
