@@ -55,16 +55,14 @@
             // 
             // textDisplay
             // 
-            this.textDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.textDisplay.BackColor = System.Drawing.SystemColors.HighlightText;
             this.textDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.textDisplay.Font = new System.Drawing.Font("MS UI Gothic", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textDisplay.Location = new System.Drawing.Point(15, 23);
+            this.textDisplay.Location = new System.Drawing.Point(18, 16);
             this.textDisplay.Multiline = true;
             this.textDisplay.Name = "textDisplay";
             this.textDisplay.ReadOnly = true;
-            this.textDisplay.Size = new System.Drawing.Size(378, 82);
+            this.textDisplay.Size = new System.Drawing.Size(372, 90);
             this.textDisplay.TabIndex = 0;
             // 
             // buttonMultiply
@@ -340,9 +338,9 @@
             // 
             this.resultDisplay.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.resultDisplay.Font = new System.Drawing.Font("MS UI Gothic", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.resultDisplay.Location = new System.Drawing.Point(17, 58);
+            this.resultDisplay.Location = new System.Drawing.Point(24, 58);
             this.resultDisplay.Name = "resultDisplay";
-            this.resultDisplay.Size = new System.Drawing.Size(375, 45);
+            this.resultDisplay.Size = new System.Drawing.Size(360, 45);
             this.resultDisplay.TabIndex = 30;
             this.resultDisplay.Text = "0";
             this.resultDisplay.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -352,8 +350,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(406, 476);
+            this.ClientSize = new System.Drawing.Size(402, 467);
             this.Controls.Add(this.resultDisplay);
+            this.Controls.Add(this.textDisplay);
             this.Controls.Add(this.buttonMultiply);
             this.Controls.Add(this.button9);
             this.Controls.Add(this.buttonC);
@@ -374,12 +373,9 @@
             this.Controls.Add(this.button);
             this.Controls.Add(this.button0);
             this.Controls.Add(this.buttonDot);
-            this.Controls.Add(this.textDisplay);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(428, 527);
-            this.MinimumSize = new System.Drawing.Size(428, 527);
             this.Name = "Calculator";
             this.Text = "電卓";
             this.ResumeLayout(false);

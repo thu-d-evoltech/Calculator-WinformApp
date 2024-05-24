@@ -8,6 +8,9 @@ namespace CalculatorApp
 {
     public partial class Calculator : Form
     {
+        private string Operation;
+        private bool IsOperatorClicked = false;
+
         /// <summary>
         /// Calculatorクラスのコンストラクタ
         /// </summary>
@@ -15,7 +18,16 @@ namespace CalculatorApp
         {
             InitializeComponent();
         }
-        string Operation;
+        
+        private int CheckIsOperator()
+        {
+            string currentText = textDisplay.Text;
+            int lastOperatorIndex = Math.Max(currentText.LastIndexOf("+"),
+                    Math.Max(currentText.LastIndexOf("-"),
+                    Math.Max(currentText.LastIndexOf("x"),
+                    currentText.LastIndexOf("÷"))));
+            return lastOperatorIndex;
+        }
 
         private void buttonDel_Click(object sender, EventArgs e)
         {
@@ -27,15 +39,15 @@ namespace CalculatorApp
 
         private void buttonNegate_Click(object sender, EventArgs e)
         {
-            string inputValue = textDisplay.Text;
+            string currentText = textDisplay.Text;
 
-            if (inputValue.StartsWith("-"))
+            if (currentText.StartsWith("-"))
             {
-                textDisplay.Text = inputValue.Substring(1);
+                textDisplay.Text = currentText.Substring(1);
             }
             else
             {
-                textDisplay.Text = "-" + inputValue;
+                textDisplay.Text = "-" + currentText;
             }
         }
 
@@ -63,29 +75,44 @@ namespace CalculatorApp
 
         private void buttonPercent_Click(object sender, EventArgs e)
         {
-            string currentValue = textDisplay.Text;
+            string currentText = textDisplay.Text;
 
-            int lastOperatorIndex = Math.Max(currentValue.LastIndexOf("+"),
-                Math.Max(currentValue.LastIndexOf("-"),
-                Math.Max(currentValue.LastIndexOf("x"),
-                currentValue.LastIndexOf("÷"))));
-
-            if (lastOperatorIndex == -1)
+            if (double.TryParse(currentText, out double inputValue))
             {
-                if (double.TryParse(currentValue, out double inputValue))
-                {
-                    double percentValue = inputValue / 100;
-                    textDisplay.Text = percentValue.ToString();
-                }
+                double percentValue = inputValue / 100;
+                textDisplay.Text = CheckPercentResult(percentValue);
             }
             else
             {
-                string lastNumber = currentValue.Substring(lastOperatorIndex + 1);
-                if (double.TryParse(lastNumber, out double lastValue))
+                if (CheckIsOperator() != -1)
                 {
-                    double percentValue = lastValue / 100;
-                    textDisplay.Text = currentValue.Substring(0, lastOperatorIndex + 1) + percentValue.ToString();
+                    string lastNumber = currentText.Substring(CheckIsOperator() + 1);
+                    if (double.TryParse(lastNumber, out double lastValue))
+                    {
+                        double percentValue = lastValue / 100;
+                        textDisplay.Text = currentText.Substring(0, CheckIsOperator() + 1) + CheckPercentResult(percentValue);
+                    }
                 }
+            }
+        }
+
+        private string CheckPercentResult(double Value)
+        {
+            decimal decimalValue = (decimal)Value;
+            int decimalPlaces = BitConverter.GetBytes(decimal.GetBits(decimalValue)[3])[2];
+
+            if (decimalPlaces < 10)
+            {
+                return decimalValue.ToString("F10").TrimEnd('0');
+            }
+            else if (decimalPlaces < 28)
+            {
+                return decimalValue.ToString("G10");
+            }
+            else
+            {
+                textDisplay.Text = "Error";
+                return textDisplay.Text;
             }
         }
 
@@ -110,7 +137,7 @@ namespace CalculatorApp
             {
                 textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + Operation;
             }
-            else if (currentText.Equals("") && (Operation.Contains("÷") || Operation.Contains("x")))
+            else if (currentText.Equals("") && !IsOperatorClicked)
             {
                 textDisplay.Clear();
             }
