@@ -61,15 +61,21 @@ namespace CalculatorApp
         {
             Button dot = (Button)sender;
             string currentText = textDisplay.Text;
-            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
 
-            if ("+-x÷.".Contains(lastChar))
+            if (double.TryParse(currentText, out double inputValue))
             {
-                textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + dot.Text;
+                textDisplay.Text = inputValue + dot.Text;
             }
             else
             {
-                textDisplay.Text += dot.Text;
+                if (CheckIsOperator() != -1)
+                {
+                    string lastNumber = currentText.Substring(CheckIsOperator() + 1);
+                    if (double.TryParse(lastNumber, out double lastValue))
+                    {
+                        textDisplay.Text = $"{currentText.Substring(0, CheckIsOperator() + 1)}{lastValue}{dot.Text}";
+                    }
+                }
             }
         }
 
