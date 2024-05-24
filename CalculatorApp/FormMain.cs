@@ -41,13 +41,22 @@ namespace CalculatorApp
         {
             string currentText = textDisplay.Text;
 
-            if (currentText.StartsWith("-"))
+            if (double.TryParse(currentText, out double inputValue))
             {
-                textDisplay.Text = currentText.Substring(1);
+                double negateValue = -inputValue;
+                textDisplay.Text = negateValue.ToString();
             }
             else
             {
-                textDisplay.Text = "-" + currentText;
+                if (CheckIsOperator() != -1)
+                {
+                    string lastNumber = currentText.Substring(CheckIsOperator() + 1);
+                    if (double.TryParse(lastNumber, out double lastValue))
+                    {
+                        double negateValue = -lastValue;
+                        textDisplay.Text = $"{currentText.Substring(0, CheckIsOperator() + 1)}({negateValue})";
+                    }
+                }
             }
         }
 
