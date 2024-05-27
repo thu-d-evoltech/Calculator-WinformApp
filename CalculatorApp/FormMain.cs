@@ -10,6 +10,8 @@ namespace CalculatorApp
     {
         private string Operation;
         private bool IsOperatorClicked = false;
+        private double NegateValue = 0;
+        private double PercentValue = 0;
 
         /// <summary>
         /// Calculatorクラスのコンストラクタ
@@ -43,8 +45,8 @@ namespace CalculatorApp
 
             if (double.TryParse(currentText, out double inputValue))
             {
-                double negateValue = -inputValue;
-                textDisplay.Text = negateValue.ToString();
+                NegateValue = -inputValue;
+                textDisplay.Text = NegateValue.ToString();
             }
             else
             {
@@ -53,8 +55,8 @@ namespace CalculatorApp
                     string lastNumber = currentText.Substring(CheckIsOperator() + 1);
                     if (double.TryParse(lastNumber, out double lastValue))
                     {
-                        double negateValue = -lastValue;
-                        textDisplay.Text = $"{currentText.Substring(0, CheckIsOperator() + 1)}({negateValue})";
+                        NegateValue = -lastValue;
+                        textDisplay.Text = $"{currentText.Substring(0, CheckIsOperator() + 1)}({NegateValue})";
                     }
                 }
             }
@@ -91,21 +93,35 @@ namespace CalculatorApp
         private void buttonPercent_Click(object sender, EventArgs e)
         {
             string currentText = textDisplay.Text;
+            int openParenthes = currentText.LastIndexOf("(");
 
             if (double.TryParse(currentText, out double inputValue))
             {
-                double percentValue = inputValue / 100;
-                textDisplay.Text = CheckPercentResult(percentValue);
+                PercentValue = inputValue / 100;
+                textDisplay.Text = CheckPercentResult(PercentValue);
             }
             else
             {
+                string lastNumber = currentText.Substring(CheckIsOperator() + 1);
                 if (CheckIsOperator() != -1)
                 {
-                    string lastNumber = currentText.Substring(CheckIsOperator() + 1);
                     if (double.TryParse(lastNumber, out double lastValue))
                     {
-                        double percentValue = lastValue / 100;
-                        textDisplay.Text = currentText.Substring(0, CheckIsOperator() + 1) + CheckPercentResult(percentValue);
+                        PercentValue = lastValue / 100;
+                        textDisplay.Text = $"{currentText.Substring(0, CheckIsOperator() + 1)}({CheckPercentResult(PercentValue)})";
+                    }
+                    else if (openParenthes != -1)
+                    {
+                        int closeParenthes = currentText.IndexOf(")", openParenthes);
+                        if (closeParenthes != -1)
+                        {
+                            string lastNumberInParentheses = currentText.Substring(openParenthes + 1, closeParenthes - openParenthes - 1);
+                            if (double.TryParse(lastNumberInParentheses, out double lastValueInParentheses))
+                            {
+                                PercentValue = lastValueInParentheses / 100;
+                                textDisplay.Text = $"{currentText.Substring(0, openParenthes + 1)}{CheckPercentResult(PercentValue)}{currentText.Substring(closeParenthes)}";
+                            }
+                        }
                     }
                 }
             }
@@ -113,21 +129,13 @@ namespace CalculatorApp
 
         private string CheckPercentResult(double Value)
         {
-            decimal decimalValue = (decimal)Value;
-            int decimalPlaces = BitConverter.GetBytes(decimal.GetBits(decimalValue)[3])[2];
-
-            if (decimalPlaces < 10)
+            if (Math.Abs(Value) < 1e-10)
             {
-                return decimalValue.ToString("F10").TrimEnd('0');
-            }
-            else if (decimalPlaces < 28)
-            {
-                return decimalValue.ToString("G10");
+                return Value.ToString("G10");
             }
             else
             {
-                textDisplay.Text = "Error";
-                return textDisplay.Text;
+                return Value.ToString("F10").TrimEnd('0').TrimEnd('.');
             }
         }
 
