@@ -64,6 +64,7 @@
             this.textDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textDisplay.Font = new System.Drawing.Font("MS UI Gothic", 19.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.textDisplay.Location = new System.Drawing.Point(3, 3);
+            this.textDisplay.MaxLength = 16;
             this.textDisplay.Multiline = true;
             this.textDisplay.Name = "textDisplay";
             this.textDisplay.ReadOnly = true;

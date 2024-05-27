@@ -9,7 +9,7 @@ namespace CalculatorApp
     public partial class Calculator : Form
     {
         private string Operation;
-        private bool IsOperatorClicked = false;
+        private bool IsOperatorClicked = true;
         private double NegateValue = 0;
         private double PercentValue = 0;
 
@@ -48,6 +48,10 @@ namespace CalculatorApp
                 NegateValue = -inputValue;
                 textDisplay.Text = NegateValue.ToString();
             }
+            else if (currentText == "")
+            {
+                textDisplay.Text = "-" + currentText;
+            }
             else
             {
                 if (CheckIsOperator() != -1)
@@ -73,7 +77,7 @@ namespace CalculatorApp
             Button dot = (Button)sender;
             string currentText = textDisplay.Text;
 
-            if (double.TryParse(currentText, out double inputValue))
+            if (double.TryParse(currentText, out double inputValue) && !currentText.Contains("."))
             {
                 textDisplay.Text = inputValue + dot.Text;
             }
@@ -82,7 +86,7 @@ namespace CalculatorApp
                 if (CheckIsOperator() != -1)
                 {
                     string lastNumber = currentText.Substring(CheckIsOperator() + 1);
-                    if (double.TryParse(lastNumber, out double lastValue))
+                    if (double.TryParse(lastNumber, out double lastValue) && !lastNumber.Contains("."))
                     {
                         textDisplay.Text = $"{currentText.Substring(0, CheckIsOperator() + 1)}{lastValue}{dot.Text}";
                     }
@@ -115,10 +119,10 @@ namespace CalculatorApp
                         int closeParenthes = currentText.IndexOf(")", openParenthes);
                         if (closeParenthes != -1)
                         {
-                            string lastNumberInParentheses = currentText.Substring(openParenthes + 1, closeParenthes - openParenthes - 1);
-                            if (double.TryParse(lastNumberInParentheses, out double lastValueInParentheses))
+                            string numberInParentheses = currentText.Substring(openParenthes + 1, closeParenthes - openParenthes - 1);
+                            if (double.TryParse(numberInParentheses, out double valueInParentheses))
                             {
-                                PercentValue = lastValueInParentheses / 100;
+                                PercentValue = valueInParentheses / 100;
                                 textDisplay.Text = $"{currentText.Substring(0, openParenthes + 1)}{CheckPercentResult(PercentValue)}{currentText.Substring(closeParenthes)}";
                             }
                         }
@@ -160,7 +164,7 @@ namespace CalculatorApp
             {
                 textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + Operation;
             }
-            else if (currentText.Equals("") && !IsOperatorClicked)
+            else if (currentText.Equals("") && IsOperatorClicked)
             {
                 textDisplay.Clear();
             }
