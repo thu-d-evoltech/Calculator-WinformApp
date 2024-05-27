@@ -9,7 +9,8 @@ namespace CalculatorApp
     public partial class Calculator : Form
     {
         private string Operation;
-        private bool IsOperatorClicked = true;
+        private bool IsOperatorClicked = false;
+        private bool IsDotClicked = false;
         private double NegateValue = 0;
         private double PercentValue = 0;
 
@@ -41,16 +42,32 @@ namespace CalculatorApp
 
         private void buttonNegate_Click(object sender, EventArgs e)
         {
-            string currentText = textDisplay.Text;
+            /*double number;
+            if (displayText.Text == "0.")
+            {
+                displayText.Text = "-0.";
+                pointCheck = true;
+            }
+            else if (displayText.Text.EndsWith("."))
+            {
+                number = Double.Parse(displayText.Text) * (-1.0);
+                displayText.Text = System.Convert.ToString(number) + ".";
+            }
+            else
+            {
+                number = Double.Parse(displayText.Text) * (-1.0);
+                displayText.Text = System.Convert.ToString(number);
+            }*/
 
-            if (double.TryParse(currentText, out double inputValue))
+            string currentText = textDisplay.Text;
+            if (currentText == "0.")
+            {
+                textDisplay.Text = "-0.";
+            }
+            else if (double.TryParse(currentText, out double inputValue))
             {
                 NegateValue = -inputValue;
                 textDisplay.Text = NegateValue.ToString();
-            }
-            else if (currentText == "")
-            {
-                textDisplay.Text = "-" + currentText;
             }
             else
             {
@@ -139,7 +156,7 @@ namespace CalculatorApp
             }
             else
             {
-                return Value.ToString("F10").TrimEnd('0').TrimEnd('.');
+                return Value.ToString("F20").TrimEnd('0').TrimEnd('.');
             }
         }
 
@@ -164,7 +181,7 @@ namespace CalculatorApp
             {
                 textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + Operation;
             }
-            else if (currentText.Equals("") && IsOperatorClicked)
+            else if (currentText.Equals("") && !IsOperatorClicked)
             {
                 textDisplay.Clear();
             }
@@ -178,7 +195,7 @@ namespace CalculatorApp
         {
             string currentText = textDisplay.Text;
             string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
-            if ("+-x÷.".Contains(lastChar))
+            if ("+-x÷".Contains(lastChar))
             {
                 textDisplay.Text = currentText.Substring(0, currentText.Length - 1);
             }
