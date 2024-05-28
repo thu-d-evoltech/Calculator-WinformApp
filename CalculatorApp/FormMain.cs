@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
@@ -8,11 +7,30 @@ namespace CalculatorApp
 {
     public partial class Calculator : Form
     {
-        private string Operation;
+        /// <summary>
+        /// 
+        /// </summary>
         private bool IsOperatorClicked = false;
-        private bool IsDotClicked = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private bool IsNumberClicked = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
         private double NegateValue = 0;
+
+        /// <summary>
+        /// 
+        /// </summary>
         private double PercentValue = 0;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private const int MaxNumberLength = 13;
 
         /// <summary>
         /// Calculatorクラスのコンストラクタ
@@ -22,6 +40,10 @@ namespace CalculatorApp
             InitializeComponent();
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private int CheckIsOperator()
         {
             string currentText = textDisplay.Text;
@@ -32,6 +54,11 @@ namespace CalculatorApp
             return lastOperatorIndex;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonDel_Click(object sender, EventArgs e)
         {
             if (textDisplay.Text.Length > 0)
@@ -40,55 +67,54 @@ namespace CalculatorApp
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonNegate_Click(object sender, EventArgs e)
         {
-            /*double number;
-            if (displayText.Text == "0.")
-            {
-                displayText.Text = "-0.";
-                pointCheck = true;
-            }
-            else if (displayText.Text.EndsWith("."))
-            {
-                number = Double.Parse(displayText.Text) * (-1.0);
-                displayText.Text = System.Convert.ToString(number) + ".";
-            }
-            else
-            {
-                number = Double.Parse(displayText.Text) * (-1.0);
-                displayText.Text = System.Convert.ToString(number);
-            }*/
-
             string currentText = textDisplay.Text;
-            if (currentText == "0.")
+            if (currentText.EndsWith(".") && CheckIsOperator() == -1)
             {
-                textDisplay.Text = "-0.";
+                textDisplay.Text = "-" + currentText;
             }
             else if (double.TryParse(currentText, out double inputValue))
             {
                 NegateValue = -inputValue;
                 textDisplay.Text = NegateValue.ToString();
             }
-            else
+            else if (CheckIsOperator() != -1)
             {
-                if (CheckIsOperator() != -1)
-                {
-                    string lastNumber = currentText.Substring(CheckIsOperator() + 1);
-                    if (double.TryParse(lastNumber, out double lastValue))
+                string lastNumber = currentText.Substring(CheckIsOperator() + 1);
+                    if (lastNumber.EndsWith("."))
+                    {
+                        textDisplay.Text = $"{currentText.Substring(0, CheckIsOperator() + 1)}-{lastNumber}";
+                    }
+                    else if (double.TryParse(lastNumber, out double lastValue))
                     {
                         NegateValue = -lastValue;
-                        textDisplay.Text = $"{currentText.Substring(0, CheckIsOperator() + 1)}({NegateValue})";
+                        textDisplay.Text = $"{currentText.Substring(0, CheckIsOperator() + 1)}{NegateValue}";
                     }
-                }
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonC_Click(object sender, EventArgs e)
         {
             textDisplay.Clear();
             resultDisplay.Text = "0";
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonDot_Click(object sender, EventArgs e)
         {
             Button dot = (Button)sender;
@@ -111,6 +137,11 @@ namespace CalculatorApp
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonPercent_Click(object sender, EventArgs e)
         {
             string currentText = textDisplay.Text;
@@ -148,6 +179,11 @@ namespace CalculatorApp
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Value"></param>
+        /// <returns></returns>
         private string CheckPercentResult(double Value)
         {
             if (Math.Abs(Value) < 1e-10)
@@ -160,26 +196,36 @@ namespace CalculatorApp
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonNumber_Click(object sender, EventArgs e)
         {
             Button num = (Button)sender;
             if (textDisplay.Text == "0")
             {
-                textDisplay.Clear();
+                textDisplay.Text = "0";
             }
             textDisplay.Text += num.Text;
+            IsNumberClicked = true;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnOperation_Click(object sender, EventArgs e)
         {
             Button opr = (Button)sender;
-            Operation = opr.Text;
             string currentText = textDisplay.Text;
             string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
 
             if ("+-x÷.".Contains(lastChar))
             {
-                textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + Operation;
+                textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + opr.Text;
             }
             else if (currentText.Equals("") && !IsOperatorClicked)
             {
@@ -187,10 +233,15 @@ namespace CalculatorApp
             }
             else
             {
-                textDisplay.Text += Operation;
+                textDisplay.Text += opr.Text;
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonEquals_Click(object sender, EventArgs e)
         {
             string currentText = textDisplay.Text;
@@ -212,9 +263,18 @@ namespace CalculatorApp
                     resultDisplay.Text = "Error";
                     textDisplay.Clear();
                 }
+                else if (equation.Contains("÷0") && !IsNumberClicked)
+                {
+                    resultDisplay.Text = "Error";
+                    textDisplay.Clear();
+                }
                 else
                 {
-                    textDisplay.Text = result.ToString();
+                    textDisplay.Text = result.ToString().TrimEnd('0');
+                    if (textDisplay.Text == "")
+                    {
+                        textDisplay.Text = "0";
+                    }
                     resultDisplay.Text = "=" + textDisplay.Text;
                 }
             }
@@ -222,6 +282,33 @@ namespace CalculatorApp
             {
                 resultDisplay.Text = "Error";
                 textDisplay.Clear();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textDisplay_TextChanged(object sender, EventArgs e)
+        {
+            string currentText = textDisplay.Text;
+            string[] parts = currentText.Split(new char[] { '+', '-', 'x', '÷', '.' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string part in parts)
+            {
+                // 
+                if (part.All(char.IsDigit))
+                {
+                    // 
+                    if (part.Length > MaxNumberLength)
+                    {
+                        //
+                        textDisplay.Text = currentText.Replace(part, part.Substring(0, MaxNumberLength));
+                        textDisplay.SelectionStart = currentText.Length;
+                        break;
+                    }
+                }
             }
         }
     }

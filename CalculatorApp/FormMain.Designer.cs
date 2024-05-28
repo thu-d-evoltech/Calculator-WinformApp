@@ -70,6 +70,7 @@
             this.textDisplay.ReadOnly = true;
             this.textDisplay.Size = new System.Drawing.Size(369, 59);
             this.textDisplay.TabIndex = 0;
+            this.textDisplay.TextChanged += new System.EventHandler(this.textDisplay_TextChanged);
             // 
             // buttonMultiply
             // 
