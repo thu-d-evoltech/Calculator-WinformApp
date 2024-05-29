@@ -281,13 +281,17 @@ namespace CalculatorApp
                 else
                 {
                     textDisplay.Text = CheckPercentResult(result);
-                    
                     resultDisplay.Text = "=" + textDisplay.Text;
                 }
             }
             catch (DivideByZeroException)
             {
                 resultDisplay.Text = "Error";
+                textDisplay.Clear();
+            }
+            catch (OverflowException)
+            {
+                resultDisplay.Text = "数字が大きすぎます";
                 textDisplay.Clear();
             }
         }
@@ -317,6 +321,8 @@ namespace CalculatorApp
                     }
                 }
             }
+            textDisplay.Select(textDisplay.Text.Length, 0);
+            textDisplay.ScrollToCaret();
         }
     }
 }
