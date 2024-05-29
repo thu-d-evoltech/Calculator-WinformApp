@@ -91,8 +91,7 @@ namespace CalculatorApp
             else if (CheckLastOperator() != -1)
             {
                 string lastNumber = currentText.Substring(CheckLastOperator() + 1);
-
-                if (currentText[CheckLastOperator()] != '-')
+                if (currentText[CheckLastOperator() - 1].ToString() != Operator)
                 {
                     if (lastNumber.Contains("."))
                     {
@@ -104,7 +103,10 @@ namespace CalculatorApp
                         textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}{NegateValue}";
                     }
                 }
-                
+                else 
+                {
+                    textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator())}{lastNumber}";
+                }
             }
         }
 
