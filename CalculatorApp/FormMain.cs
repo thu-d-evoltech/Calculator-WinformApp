@@ -8,12 +8,10 @@ namespace CalculatorApp
 {
     public partial class Calculator : Form
     {
-        private string Operator;
-
         /// <summary>
-        /// 演算子ボタンがクリックされたチェック
+        /// 各演算子ボタン
         /// </summary>
-        private bool IsOperatorClicked = false;
+        private string Operator;
 
         /// <summary>
         /// ネガティブ値
@@ -28,7 +26,7 @@ namespace CalculatorApp
         /// <summary>
         /// 最大の数値の桁数
         /// </summary>
-        private const int MaxNumberLength = 10;
+        private const int MaxNumberLength = 13;
 
         /// <summary>
         /// Calculatorクラスのコンストラクタ
@@ -58,6 +56,26 @@ namespace CalculatorApp
         }
 
         /// <summary>
+        /// 与えられた数値の結果をチェックし、適切な形式で文字列に変換する
+        /// </summary>
+        /// <param name="Value">チェックする数値</param>
+        /// <returns>適切な形式の文字列に変換した結果</returns>
+        private string CheckResult(double Value)
+        {
+            if (Math.Abs(Value) < 1e-10)
+            {
+                // 数値の絶対値は1e-10より小さい場合、数値は指数として返す
+                return Value.ToString("G10");
+            }
+            else
+            {
+                // それ以外の場合、数値は10進数として返す
+                // 不要な末尾のゼロと小数点を削除す
+                return Value.ToString("F20").TrimEnd('0').TrimEnd('.');
+            }
+        }
+
+        /// <summary>
         /// テキストボックスの最後の文字を削除するボタン
         /// </summary>
         /// <param name="sender">イベントの発生元</param>
@@ -66,55 +84,65 @@ namespace CalculatorApp
         {
             if (textDisplay.Text.Length > 0)
             {
+                // 最後の文字を削除
                 textDisplay.Text = textDisplay.Text.Remove(textDisplay.Text.Length - 1, 1);
             }
         }
 
         /// <summary>
-        /// 
+        /// ネガティブボタンがクリックされたときの処理を実行する
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">イベントの送信元</param>
+        /// <param name="e">イベント引数</param>
         private void buttonNegate_Click(object sender, EventArgs e)
         {
             string currentText = textDisplay.Text;
 
+            // 小数点で終わっていて最後の演算子が存在しない場合、先頭にマイナスを追加
             if (currentText.EndsWith(".") && CheckLastOperator() == -1)
             {
                 textDisplay.Text = "-" + currentText;
             }
+            // テキストボックスで数値として解釈できる場合、その値の符号を反転
             else if (double.TryParse(currentText, out double inputValue))
             {
                 NegateValue = -inputValue;
                 textDisplay.Text = NegateValue.ToString();
             }
+            // テキストボックスで演算子もある場合
             else if (CheckLastOperator() != -1)
             {
+                // 最後の演算子の後の値
                 string lastNumber = currentText.Substring(CheckLastOperator() + 1);
+
+                // 最後の演算子の前に別の演算子が存在しない場合
                 if (currentText[CheckLastOperator() - 1].ToString() != Operator)
                 {
                     if (lastNumber.Contains("."))
                     {
+                        // 最後の演算子の後の値に小数点が含まれる場合、値の前にマイナス記号を追加する
                         textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}-{lastNumber}";
                     }
                     else if (double.TryParse(lastNumber, out double lastValue))
                     {
+                        // 最後の演算子の後の値は数値として解釈できる場合、その値の符号を反転
                         NegateValue = -lastValue;
                         textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}{NegateValue}";
                     }
                 }
-                else 
+                else
                 {
+                    // 最後の演算子の前に別の演算子が存在する場合、マイナス記号を削除する
                     textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator())}{lastNumber}";
                 }
             }
         }
 
         /// <summary>
-        /// 
+        /// ボタン「C」がクリックされたときの処理を実行する
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">イベントの送信元</param>
+        /// <param name="e">イベント引数</param>
         private void buttonC_Click(object sender, EventArgs e)
         {
             textDisplay.Clear();
@@ -122,28 +150,30 @@ namespace CalculatorApp
         }
 
         /// <summary>
-        /// 
+        /// 小数点ボタンがクリックされたときの処理を実行する
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">イベントの送信元</param>
+        /// <param name="e">イベント引数</param>
         private void buttonDot_Click(object sender, EventArgs e)
         {
             Button dot = (Button)sender;
             string currentText = textDisplay.Text;
 
+            // 数値として解釈でき、かつまだ小数点が含まれていない場合、小数点を追加する
             if (double.TryParse(currentText, out double inputValue) && !currentText.Contains("."))
             {
                 textDisplay.Text = inputValue + dot.Text;
             }
-            else
+            // テキストボックスで演算子もある場合
+            else if (CheckLastOperator() != -1)
             {
-                if (CheckLastOperator() != -1)
+                // 最後の演算子の後の値
+                string lastNumber = currentText.Substring(CheckLastOperator() + 1);
+
+                // 最後の演算子の後の値は数値として解釈でき、かつまだ小数点が含まれていない場合場合、小数点を追加する
+                if (double.TryParse(lastNumber, out double lastValue) && !lastNumber.Contains("."))
                 {
-                    string lastNumber = currentText.Substring(CheckLastOperator() + 1);
-                    if (double.TryParse(lastNumber, out double lastValue) && !lastNumber.Contains("."))
-                    {
-                        textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}{lastValue}{dot.Text}";
-                    }
+                    textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}{lastValue}{dot.Text}";
                 }
             }
         }
@@ -161,7 +191,7 @@ namespace CalculatorApp
             if (double.TryParse(currentText, out double inputValue))
             {
                 PercentValue = inputValue / 100;
-                textDisplay.Text = CheckPercentResult(PercentValue);
+                textDisplay.Text = CheckResult(PercentValue);
             }
             else
             {
@@ -171,7 +201,7 @@ namespace CalculatorApp
                     if (double.TryParse(lastNumber, out double lastValue))
                     {
                         PercentValue = lastValue / 100;
-                        textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}({CheckPercentResult(PercentValue)})";
+                        textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}({CheckResult(PercentValue)})";
                     }
                     else if (openParenthes != -1)
                     {
@@ -182,7 +212,8 @@ namespace CalculatorApp
                             if (double.TryParse(numberInParentheses, out double valueInParentheses))
                             {
                                 PercentValue = valueInParentheses / 100;
-                                textDisplay.Text = $"{currentText.Substring(0, openParenthes + 1)}{CheckPercentResult(PercentValue)}{currentText.Substring(closeParenthes)}";
+                                textDisplay.Text = currentText.Substring(0, openParenthes + 1) + 
+                                    CheckResult(PercentValue) + currentText.Substring(closeParenthes);
                             }
                         }
                     }
@@ -191,60 +222,56 @@ namespace CalculatorApp
         }
 
         /// <summary>
-        /// 
+        /// 数字ボタンがクリックされたときの処理を実行する
         /// </summary>
-        /// <param name="Value"></param>
-        /// <returns></returns>
-        private string CheckPercentResult(double Value)
-        {
-            if (Math.Abs(Value) < 1e-10)
-            {
-                return Value.ToString("G10");
-            }
-            else
-            {
-                return Value.ToString("F20").TrimEnd('0').TrimEnd('.');
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">イベントの送信元</param>
+        /// <param name="e">イベント引数</param>
         private void buttonNumber_Click(object sender, EventArgs e)
         {
             Button num = (Button)sender;
             string currentText = textDisplay.Text;
+
+            // 文字列の最後の値を検索する
             string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
+
+            // テキストが「0」の場合、クリア
             if (textDisplay.Text == "0")
             {
                 textDisplay.Clear();
             }
+            // 最後の文字が「0」で、まだ小数点が含まれておらず、かつ「÷」が含まれている場合、数字を入力出来ない
             else if ("0".Contains(lastChar) && !currentText.Contains(".") && currentText.Contains("÷"))
             {
                 return;
             }
+
+            // ボタンのテキストをテキストボックスに追加
             textDisplay.Text += num.Text;
         }
 
         /// <summary>
-        /// 
+        /// 演算子ボタンがクリックされたときの処理を実行する
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">イベントの送信元</param>
+        /// <param name="e">イベント引数</param>
         private void btnOperation_Click(object sender, EventArgs e)
         {
             Button opr = (Button)sender;
+
+            // ボタンのテキストを Operator 変数に格納します。
             Operator = opr.Text;
             string currentText = textDisplay.Text;
+
+            // 文字列の最後の値を検索する
             string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
 
+            // 最後の文字が演算子または小数点の場合、疎の演算を新しい演算子で置き換える
             if ("+-x÷.".Contains(lastChar))
             {
                 textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + opr.Text;
             }
-            else if (currentText.Equals("") && !IsOperatorClicked)
+            // テキストボックスが空の場合、演算子を入力出来ない
+            else if (currentText.Equals(""))
             {
                 textDisplay.Clear();
             }
@@ -282,7 +309,7 @@ namespace CalculatorApp
                 }
                 else
                 {
-                    textDisplay.Text = CheckPercentResult(result);
+                    textDisplay.Text = CheckResult(result);
                     resultDisplay.Text = "=" + textDisplay.Text;
                 }
             }
@@ -299,26 +326,27 @@ namespace CalculatorApp
         }
 
         /// <summary>
-        /// 
+        /// テキストボックスの内容が変更されたときに呼び出されるイベントハンドラー。
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">イベントの送信元</param>
+        /// <param name="e">イベント引数</param>
         private void textDisplay_TextChanged(object sender, EventArgs e)
         {
             string currentText = textDisplay.Text;
-            string[] parts = currentText.Split(new char[] { '+', '-', 'x', '÷', '.' }, StringSplitOptions.RemoveEmptyEntries);
+
+            // テキストを演算子と小数点で分割し、空の部分は除外する
+            string[] parts = currentText.Split(new char[] { '+', '-', 'x', '÷'}, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string part in parts)
             {
-                // 
+                // 部分が数字のみで構成されているかをチェックする
                 if (part.All(char.IsDigit))
                 {
-                    // 
+                    // 数字の長さが最大許容長を超えているかをチェックする
                     if (part.Length > MaxNumberLength)
                     {
-                        //
+                        // 最大許容長を超える部分を切り取り、テキストボックスのテキストを表示する
                         textDisplay.Text = currentText.Replace(part, part.Substring(0, MaxNumberLength));
-                        textDisplay.SelectionStart = currentText.Length;
                         break;
                     }
                 }
