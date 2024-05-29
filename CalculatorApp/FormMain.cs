@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -7,30 +8,27 @@ namespace CalculatorApp
 {
     public partial class Calculator : Form
     {
+        private string Operator;
+
         /// <summary>
-        /// 
+        /// 演算子ボタンがクリックされたチェック
         /// </summary>
         private bool IsOperatorClicked = false;
 
         /// <summary>
-        /// 
-        /// </summary>
-        private bool IsNumberClicked = false;
-
-        /// <summary>
-        /// 
+        /// ネガティブ値
         /// </summary>
         private double NegateValue = 0;
 
         /// <summary>
-        /// 
+        /// パーセントの結果
         /// </summary>
         private double PercentValue = 0;
 
         /// <summary>
-        /// 
+        /// 最大の数値の桁数
         /// </summary>
-        private const int MaxNumberLength = 13;
+        private const int MaxNumberLength = 10;
 
         /// <summary>
         /// Calculatorクラスのコンストラクタ
@@ -39,26 +37,31 @@ namespace CalculatorApp
         {
             InitializeComponent();
         }
-        
+
         /// <summary>
-        /// 
+        /// テキストから最後の演算子の位置を検索す
         /// </summary>
-        /// <returns></returns>
-        private int CheckIsOperator()
+        /// <returns>最後の演算子の位置。見つからない場合は-1</returns>
+        private int CheckLastOperator()
         {
             string currentText = textDisplay.Text;
+
+            // '+'、'-'、'x'、'÷'の各演算子が最位置を検索し、
+            // 最後に出現する演算子の位置を見つける
             int lastOperatorIndex = Math.Max(currentText.LastIndexOf("+"),
                     Math.Max(currentText.LastIndexOf("-"),
                     Math.Max(currentText.LastIndexOf("x"),
                     currentText.LastIndexOf("÷"))));
+
+            // 最後の演算子の位置を返す
             return lastOperatorIndex;
         }
 
         /// <summary>
-        /// 
+        /// テキストボックスの最後の文字を削除するボタン
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">イベントの発生元</param>
+        /// <param name="e">イベント引数</param>
         private void buttonDel_Click(object sender, EventArgs e)
         {
             if (textDisplay.Text.Length > 0)
@@ -75,7 +78,8 @@ namespace CalculatorApp
         private void buttonNegate_Click(object sender, EventArgs e)
         {
             string currentText = textDisplay.Text;
-            if (currentText.EndsWith(".") && CheckIsOperator() == -1)
+
+            if (currentText.EndsWith(".") && CheckLastOperator() == -1)
             {
                 textDisplay.Text = "-" + currentText;
             }
@@ -84,18 +88,23 @@ namespace CalculatorApp
                 NegateValue = -inputValue;
                 textDisplay.Text = NegateValue.ToString();
             }
-            else if (CheckIsOperator() != -1)
+            else if (CheckLastOperator() != -1)
             {
-                string lastNumber = currentText.Substring(CheckIsOperator() + 1);
-                    if (lastNumber.EndsWith("."))
+                string lastNumber = currentText.Substring(CheckLastOperator() + 1);
+
+                if (currentText[CheckLastOperator()] != '-')
+                {
+                    if (lastNumber.Contains("."))
                     {
-                        textDisplay.Text = $"{currentText.Substring(0, CheckIsOperator() + 1)}-{lastNumber}";
+                        textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}-{lastNumber}";
                     }
                     else if (double.TryParse(lastNumber, out double lastValue))
                     {
                         NegateValue = -lastValue;
-                        textDisplay.Text = $"{currentText.Substring(0, CheckIsOperator() + 1)}{NegateValue}";
+                        textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}{NegateValue}";
                     }
+                }
+                
             }
         }
 
@@ -126,12 +135,12 @@ namespace CalculatorApp
             }
             else
             {
-                if (CheckIsOperator() != -1)
+                if (CheckLastOperator() != -1)
                 {
-                    string lastNumber = currentText.Substring(CheckIsOperator() + 1);
+                    string lastNumber = currentText.Substring(CheckLastOperator() + 1);
                     if (double.TryParse(lastNumber, out double lastValue) && !lastNumber.Contains("."))
                     {
-                        textDisplay.Text = $"{currentText.Substring(0, CheckIsOperator() + 1)}{lastValue}{dot.Text}";
+                        textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}{lastValue}{dot.Text}";
                     }
                 }
             }
@@ -154,13 +163,13 @@ namespace CalculatorApp
             }
             else
             {
-                string lastNumber = currentText.Substring(CheckIsOperator() + 1);
-                if (CheckIsOperator() != -1)
+                string lastNumber = currentText.Substring(CheckLastOperator() + 1);
+                if (CheckLastOperator() != -1)
                 {
                     if (double.TryParse(lastNumber, out double lastValue))
                     {
                         PercentValue = lastValue / 100;
-                        textDisplay.Text = $"{currentText.Substring(0, CheckIsOperator() + 1)}({CheckPercentResult(PercentValue)})";
+                        textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}({CheckPercentResult(PercentValue)})";
                     }
                     else if (openParenthes != -1)
                     {
@@ -204,12 +213,17 @@ namespace CalculatorApp
         private void buttonNumber_Click(object sender, EventArgs e)
         {
             Button num = (Button)sender;
+            string currentText = textDisplay.Text;
+            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
             if (textDisplay.Text == "0")
             {
-                textDisplay.Text = "0";
+                textDisplay.Clear();
+            }
+            else if ("0".Contains(lastChar) && !currentText.Contains(".") && currentText.Contains("÷"))
+            {
+                return;
             }
             textDisplay.Text += num.Text;
-            IsNumberClicked = true;
         }
 
         /// <summary>
@@ -220,6 +234,7 @@ namespace CalculatorApp
         private void btnOperation_Click(object sender, EventArgs e)
         {
             Button opr = (Button)sender;
+            Operator = opr.Text;
             string currentText = textDisplay.Text;
             string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
 
@@ -256,25 +271,17 @@ namespace CalculatorApp
 
             try
             {
-                var result = new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null);
+                double result = Convert.ToDouble(new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null));
 
                 if (equation.Contains("÷0") && !equation.Contains("÷0."))
                 {
                     resultDisplay.Text = "Error";
                     textDisplay.Clear();
                 }
-                else if (equation.Contains("÷0") && !IsNumberClicked)
-                {
-                    resultDisplay.Text = "Error";
-                    textDisplay.Clear();
-                }
                 else
                 {
-                    textDisplay.Text = result.ToString().TrimEnd('0');
-                    if (textDisplay.Text == "")
-                    {
-                        textDisplay.Text = "0";
-                    }
+                    textDisplay.Text = CheckPercentResult(result);
+                    
                     resultDisplay.Text = "=" + textDisplay.Text;
                 }
             }
