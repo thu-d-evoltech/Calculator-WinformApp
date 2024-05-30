@@ -116,14 +116,7 @@ namespace CalculatorApp
             else if (double.TryParse(currentText, out double inputValue))
             {
                 NegateValue = -inputValue;
-                if (currentText.StartsWith("-"))
-                {
-                    textDisplay.Text = currentText.Substring(1);
-                }
-                else
-                {
-                    textDisplay.Text = NegateValue.ToString();
-                }
+                textDisplay.Text = NegateValue.ToString();
             }
             // テキストボックスで演算子もある場合
             else if (CheckLastOperator() != -1)
