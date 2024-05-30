@@ -176,7 +176,7 @@ namespace CalculatorApp
             string currentText = textDisplay.Text;
 
             // 数値として解釈でき、かつまだ小数点が含まれていない場合、小数点を追加する
-            if (double.TryParse(currentText, out double inputValue) && !currentText.Contains("."))
+            if (double.TryParse(currentText, out double inputValue) && !currentText.Contains(".") && !currentText.Contains("E"))
             {
                 textDisplay.Text = inputValue + dot.Text;
             }
@@ -187,10 +187,10 @@ namespace CalculatorApp
                 string lastNumber = currentText.Substring(CheckLastOperator() + 1);
 
                 // 最後の演算子の後の値は数値として解釈でき、かつまだ小数点が含まれていない場合場合、小数点を追加する
-                if (double.TryParse(lastNumber, out double lastValue) && !lastNumber.Contains("."))
-                {
-                    textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}{lastValue}{dot.Text}";
-                }
+                if (double.TryParse(lastNumber, out double lastValue) && !lastNumber.Contains(".") && !currentText.Contains("E"))
+                    {
+                        textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}{lastValue}{dot.Text}";
+                    }
             }
         }
 
@@ -256,7 +256,8 @@ namespace CalculatorApp
                 textDisplay.Clear();
             }
             // 最後の文字が「0」で、まだ小数点が含まれておらず、かつ「÷」が含まれている場合、数字を入力出来ない
-            else if ("0".Contains(lastChar) && !currentText.Contains(".") && currentText.Contains("÷"))
+            else if ("0".Contains(lastChar) && !currentText.Contains(".") && currentText.Contains("÷")
+                || ")".Contains(lastChar))
             {
                 return;
             }
@@ -320,19 +321,14 @@ namespace CalculatorApp
 
             try
             {
-                double result = Convert.ToDouble(new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null));
-                /*if (lastChar.Contains("E"))
+                if (lastChar.Contains("E"))
                 {
                     // Tính giá trị của số e
                     double eValue = Math.Exp(1);
                     // Thay thế "E" bằng giá trị của số e
-                    equation = equation.Replace("E", eValue.ToString());
-                    result = Convert.ToDouble(new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null));
+                    equation = equation.Replace("E", $"*{eValue}");
                 }
-                else
-                {
-                    result = Convert.ToDouble(new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null));
-                }*/
+                double result = Convert.ToDouble(new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null));
 
                 if (equation.Contains("÷0") && !equation.Contains("÷0."))
                 {
@@ -353,6 +349,11 @@ namespace CalculatorApp
             catch (OverflowException)
             {
                 resultDisplay.Text = "数字が大きすぎます";
+                textDisplay.Clear();
+            }
+            catch (FormatException)
+            {
+                resultDisplay.Text = "入力形式が正しくない";
                 textDisplay.Clear();
             }
         }
