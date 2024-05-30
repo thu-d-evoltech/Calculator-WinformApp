@@ -82,10 +82,19 @@ namespace CalculatorApp
         /// <param name="e">イベント引数</param>
         private void buttonDel_Click(object sender, EventArgs e)
         {
-            if (textDisplay.Text.Length > 0)
+            string currentText = textDisplay.Text;
+
+            // 文字列の最後の値を検索する
+            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
+
+            if (")".Contains(lastChar))
+            {
+                return;
+            }
+            else if (currentText.Length > 0)
             {
                 // 最後の文字を削除
-                textDisplay.Text = textDisplay.Text.Remove(textDisplay.Text.Length - 1, 1);
+                textDisplay.Text = currentText.Remove(currentText.Length - 1, 1);
             }
         }
 
@@ -294,6 +303,10 @@ namespace CalculatorApp
             {
                 textDisplay.Text = currentText.Substring(0, currentText.Length - 1);
             }
+            else if (currentText == "")
+            {
+                return;
+            }
 
             string equation = textDisplay.Text;
             equation = equation.Replace("/", "÷").Replace("*", "x");
@@ -301,6 +314,18 @@ namespace CalculatorApp
             try
             {
                 double result = Convert.ToDouble(new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null));
+                /*if (lastChar.Contains("E"))
+                {
+                    // Tính giá trị của số e
+                    double eValue = Math.Exp(1);
+                    // Thay thế "E" bằng giá trị của số e
+                    equation = equation.Replace("E", eValue.ToString());
+                    result = Convert.ToDouble(new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null));
+                }
+                else
+                {
+                    result = Convert.ToDouble(new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null));
+                }*/
 
                 if (equation.Contains("÷0") && !equation.Contains("÷0."))
                 {
@@ -351,6 +376,7 @@ namespace CalculatorApp
                     }
                 }
             }
+            // テキストボックスの選択範囲をテキストの最後に設定し、カーソルをスクロールさせる
             textDisplay.Select(textDisplay.Text.Length, 0);
             textDisplay.ScrollToCaret();
         }
