@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data;
-using System.Diagnostics.Eventing.Reader;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -24,9 +24,9 @@ namespace CalculatorApp
         private double PercentValue = 0;
 
         /// <summary>
-        /// 最大の数値の桁数
+        /// 元のフォントサイズ
         /// </summary>
-        private const int MaxNumberLength = 13;
+        private float OriginalFontSize;
 
         /// <summary>
         /// Calculatorクラスのコンストラクタ
@@ -34,6 +34,7 @@ namespace CalculatorApp
         public Calculator()
         {
             InitializeComponent();
+            OriginalFontSize = textDisplay.Font.Size;
         }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace CalculatorApp
         /// <returns>適切な形式の文字列に変換した結果</returns>
         private string CheckResult(double Value)
         {
-            if (Math.Abs(Value) < 1e-10)
+            if (Math.Abs(Value) < 1e-10 || Math.Abs(Value) > 1e12)
             {
                 // 数値の絶対値は1e-10より小さい場合、数値は指数として返す
                 return Value.ToString("G10");
@@ -108,7 +109,7 @@ namespace CalculatorApp
             string currentText = textDisplay.Text;
 
             // 小数点で終わっていて最後の演算子が存在しない場合、先頭にマイナスを追加
-            if (currentText.EndsWith(".") && CheckLastOperator() == -1)
+            if (currentText.Contains(".") && CheckLastOperator() == -1)
             {
                 textDisplay.Text = "-" + currentText;
             }
@@ -299,10 +300,10 @@ namespace CalculatorApp
         }
 
         /// <summary>
-        /// 
+        /// 等しいボタンがクリックされたときの処理を実行する
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">イベントの送信元</param>
+        /// <param name="e">イベント引数</param>
         private void buttonEquals_Click(object sender, EventArgs e)
         {
             string currentText = textDisplay.Text;
@@ -331,6 +332,11 @@ namespace CalculatorApp
                 double result = Convert.ToDouble(new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null));
 
                 if (equation.Contains("÷0") && !equation.Contains("÷0."))
+                {
+                    resultDisplay.Text = "Error";
+                    textDisplay.Clear();
+                }
+                else if (double.IsPositiveInfinity(result) || double.IsNegativeInfinity(result))
                 {
                     resultDisplay.Text = "Error";
                     textDisplay.Clear();
@@ -365,28 +371,36 @@ namespace CalculatorApp
         /// <param name="e">イベント引数</param>
         private void textDisplay_TextChanged(object sender, EventArgs e)
         {
+            const int MaxNumberLength = 45;
+
             string currentText = textDisplay.Text;
 
-            // テキストを演算子と小数点で分割し、空の部分は除外する
-            string[] parts = currentText.Split(new char[] { '+', '-', 'x', '÷'}, StringSplitOptions.RemoveEmptyEntries);
-
-            foreach (string part in parts)
+            // 数字の長さが最大許容長を超えているかをチェックする
+            if (currentText.Length > MaxNumberLength)
             {
-                // 部分が数字のみで構成されているかをチェックする
-                if (part.All(char.IsDigit))
-                {
-                    // 数字の長さが最大許容長を超えているかをチェックする
-                    if (part.Length > MaxNumberLength)
-                    {
-                        // 最大許容長を超える部分を切り取り、テキストボックスのテキストを表示する
-                        textDisplay.Text = currentText.Replace(part, part.Substring(0, MaxNumberLength));
-                        break;
-                    }
-                }
+                // 最大許容長を超える部分を切り取り、テキストボックスのテキストを表示する
+                textDisplay.Text = currentText.Substring(0, MaxNumberLength);
             }
-            // テキストボックスの選択範囲をテキストの最後に設定し、カーソルをスクロールさせる
-            textDisplay.Select(textDisplay.Text.Length, 0);
-            textDisplay.ScrollToCaret();
+
+            // テキストボックスのクライアント領域の幅を取得
+            int textWidth = TextRenderer.MeasureText(currentText, textDisplay.Font).Width;
+
+            // テキストボックスの幅を超える場合、フォントサイズを小さくする
+            while (textWidth > textDisplay.ClientSize.Width && textDisplay.Font.Size > 17)
+            {
+
+                // フォントサイズを少し小さくする
+                textDisplay.Font = new Font(textDisplay.Font.FontFamily, textDisplay.Font.Size - 0.5f, textDisplay.Font.Style);
+
+                
+                // 新しいフォントサイズでテキストの幅を再計算
+                textWidth = TextRenderer.MeasureText(currentText, textDisplay.Font).Width;
+            }
+            if (textWidth <= textDisplay.ClientSize.Width)
+            {
+                float textSize = textDisplay.Font.Size + 0.5f;
+                textDisplay.Font = new Font(textDisplay.Font.FontFamily, textSize > OriginalFontSize ? OriginalFontSize : textSize, textDisplay.Font.Style);
+            }
         }
     }
 }
