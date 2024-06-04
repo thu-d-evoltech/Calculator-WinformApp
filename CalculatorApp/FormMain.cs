@@ -162,8 +162,9 @@ namespace CalculatorApp
         /// <param name="e">イベント引数</param>
         private void buttonC_Click(object sender, EventArgs e)
         {
-            textDisplay.Clear();
-            resultDisplay.Text = "0";
+            textDisplay.Text = "0";
+            resultDisplay.Text = "=";
+            textDisplay.Font = new Font(textDisplay.Font.FontFamily, OriginalFontSize, textDisplay.Font.Style);
         }
 
         /// <summary>
@@ -182,7 +183,7 @@ namespace CalculatorApp
                 textDisplay.Text = inputValue + dot.Text;
             }
             // テキストボックスで演算子もある場合
-            else if (CheckLastOperator() != -1)
+            else
             {
                 // 最後の演算子の後の値
                 string lastNumber = currentText.Substring(CheckLastOperator() + 1);
@@ -196,15 +197,18 @@ namespace CalculatorApp
         }
 
         /// <summary>
-        /// 
+        /// パーセントボタンがクリックされたときの処理を実行する
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void buttonPercent_Click(object sender, EventArgs e)
         {
             string currentText = textDisplay.Text;
+
+            // 最後の開き括弧の位置の変数
             int openParenthes = currentText.LastIndexOf("(");
 
+            // 現在のテキストが数値に変換できる場合、その数値のパーセントを計算する
             if (double.TryParse(currentText, out double inputValue))
             {
                 PercentValue = inputValue / 100;
@@ -212,26 +216,34 @@ namespace CalculatorApp
             }
             else
             {
+                // 最後の演算子の後の数字を取得
                 string lastNumber = currentText.Substring(CheckLastOperator() + 1);
-                if (CheckLastOperator() != -1)
+
+                // 最後の演算子の後の数字が数値に変換できる場合、その数値のパーセントを計算する
+                if (double.TryParse(lastNumber, out double lastValue))
                 {
-                    if (double.TryParse(lastNumber, out double lastValue))
+                    PercentValue = lastValue / 100;
+
+                    // パーセンテージの結果を括弧内に入れて、テキストボックスに表示す
+                    textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}({CheckResult(PercentValue)})";
+                }
+                // 開き括弧がある場合
+                else if (openParenthes != -1)
+                {
+                    // 対応する閉じ括弧の位置を見つける
+                    int closeParenthes = currentText.IndexOf(")", openParenthes);
+                    if (closeParenthes != -1)
                     {
-                        PercentValue = lastValue / 100;
-                        textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}({CheckResult(PercentValue)})";
-                    }
-                    else if (openParenthes != -1)
-                    {
-                        int closeParenthes = currentText.IndexOf(")", openParenthes);
-                        if (closeParenthes != -1)
+                        // 閉じ括弧を見つける場合、括弧内の数字を取得
+                        string numberInParentheses = currentText.Substring(openParenthes + 1, closeParenthes - openParenthes - 1);
+
+                        // その括弧内の数字のパーセントを計算する
+                        if (double.TryParse(numberInParentheses, out double valueInParentheses))
                         {
-                            string numberInParentheses = currentText.Substring(openParenthes + 1, closeParenthes - openParenthes - 1);
-                            if (double.TryParse(numberInParentheses, out double valueInParentheses))
-                            {
-                                PercentValue = valueInParentheses / 100;
-                                textDisplay.Text = currentText.Substring(0, openParenthes + 1) + 
-                                    CheckResult(PercentValue) + currentText.Substring(closeParenthes);
-                            }
+                            PercentValue = valueInParentheses / 100;
+
+                            // パーセンテージの結果を括弧内に入れて、テキストボックスに表示す
+                            textDisplay.Text = currentText.Substring(0, openParenthes + 1) + CheckResult(PercentValue) + currentText.Substring(closeParenthes);
                         }
                     }
                 }
@@ -307,37 +319,41 @@ namespace CalculatorApp
         private void buttonEquals_Click(object sender, EventArgs e)
         {
             string currentText = textDisplay.Text;
+
+            // 文字列の最後の値を検索する
             string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
+
             if ("+-x÷".Contains(lastChar))
             {
+                // 最後の文字は演算子の場合、その演算子を削除する
                 textDisplay.Text = currentText.Substring(0, currentText.Length - 1);
             }
+            // 現在のテキストが空の場合、処理を中断する
             else if (currentText == "")
             {
                 return;
             }
 
+            // 計算式を準備します。"/"と"*"をそれぞれフォームの"÷"と"x"に置換する
             string equation = textDisplay.Text;
             equation = equation.Replace("/", "÷").Replace("*", "x");
 
             try
             {
+                // 最後の文字が"E"を含む場合、数値eの値を計算し、"E"をその値に置換します。
                 if (lastChar.Contains("E"))
                 {
-                    // Tính giá trị của số e
-                    double eValue = Math.Exp(1);
-                    // Thay thế "E" bằng giá trị của số e
-                    equation = equation.Replace("E", $"*{eValue}");
+                    // 最後の文字が"E"を含む場合、"E"の値を計算する
+                    equation = equation.Replace("E", $"*{Math.Exp(1)}");
                 }
-                double result = Convert.ToDouble(new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null));
 
-                if (equation.Contains("÷0") && !equation.Contains("÷0."))
+                // データベースのテーブルのようにデータを格納するための DataTable クラスを使用する
+                // そのデータを計算するために Compute メソッドを使用して、結果をdouble型で取得する
+                double result = Convert.ToDouble(new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null));
+                
+                if (double.IsPositiveInfinity(result) || double.IsNegativeInfinity(result) || double.IsNaN(result))
                 {
-                    resultDisplay.Text = "Error";
-                    textDisplay.Clear();
-                }
-                else if (double.IsPositiveInfinity(result) || double.IsNegativeInfinity(result))
-                {
+                    // 結果が無限大の場合はメッセージを表示する
                     resultDisplay.Text = "Error";
                     textDisplay.Clear();
                 }
@@ -371,8 +387,7 @@ namespace CalculatorApp
         /// <param name="e">イベント引数</param>
         private void textDisplay_TextChanged(object sender, EventArgs e)
         {
-            const int MaxNumberLength = 45;
-
+            const int MaxNumberLength = 48;
             string currentText = textDisplay.Text;
 
             // 数字の長さが最大許容長を超えているかをチェックする
@@ -385,22 +400,34 @@ namespace CalculatorApp
             // テキストボックスのクライアント領域の幅を取得
             int textWidth = TextRenderer.MeasureText(currentText, textDisplay.Font).Width;
 
-            // テキストボックスの幅を超える場合、フォントサイズを小さくする
+            // フォントサイズが１７以上、テキストはテキストボックスの幅を超える場合、フォントサイズを小さくされる
             while (textWidth > textDisplay.ClientSize.Width && textDisplay.Font.Size > 17)
             {
-
-                // フォントサイズを少し小さくする
                 textDisplay.Font = new Font(textDisplay.Font.FontFamily, textDisplay.Font.Size - 0.5f, textDisplay.Font.Style);
 
-                
                 // 新しいフォントサイズでテキストの幅を再計算
                 textWidth = TextRenderer.MeasureText(currentText, textDisplay.Font).Width;
+            }
+            if (textDisplay.Font.Size == 17)
+            {
+                // フォント サイズは１７が等しい場合にのみテキストが改行される
+                textDisplay.WordWrap = true;
             }
             if (textWidth <= textDisplay.ClientSize.Width)
             {
                 float textSize = textDisplay.Font.Size + 0.5f;
                 textDisplay.Font = new Font(textDisplay.Font.FontFamily, textSize > OriginalFontSize ? OriginalFontSize : textSize, textDisplay.Font.Style);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textDisplay_Enter(object sender, EventArgs e)
+        {
+            ActiveControl = null;
         }
     }
 }

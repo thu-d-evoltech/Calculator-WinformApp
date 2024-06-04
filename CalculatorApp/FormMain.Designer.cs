@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Calculator));
-            this.textDisplay = new System.Windows.Forms.TextBox();
             this.buttonMultiply = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.buttonDivide = new System.Windows.Forms.Button();
@@ -52,26 +51,11 @@
             this.buttonDel = new System.Windows.Forms.Button();
             this.resultDisplay = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.textDisplay = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // textDisplay
-            // 
-            this.textDisplay.BackColor = System.Drawing.SystemColors.HighlightText;
-            this.textDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textDisplay.Font = new System.Drawing.Font("MS UI Gothic", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textDisplay.Location = new System.Drawing.Point(3, 3);
-            this.textDisplay.MaxLength = 20;
-            this.textDisplay.MinimumSize = new System.Drawing.Size(438, 60);
-            this.textDisplay.Multiline = true;
-            this.textDisplay.Name = "textDisplay";
-            this.textDisplay.ReadOnly = true;
-            this.textDisplay.Size = new System.Drawing.Size(438, 60);
-            this.textDisplay.TabIndex = 0;
-            this.textDisplay.TextChanged += new System.EventHandler(this.textDisplay_TextChanged);
             // 
             // buttonMultiply
             // 
@@ -324,6 +308,7 @@
             // 
             // resultDisplay
             // 
+            this.resultDisplay.AutoSize = true;
             this.resultDisplay.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.resultDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.resultDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -332,7 +317,7 @@
             this.resultDisplay.Name = "resultDisplay";
             this.resultDisplay.Size = new System.Drawing.Size(438, 66);
             this.resultDisplay.TabIndex = 0;
-            this.resultDisplay.Text = "0";
+            this.resultDisplay.Text = "=";
             this.resultDisplay.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // tableLayoutPanel1
@@ -340,6 +325,7 @@
             this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.textDisplay, 0, 0);
@@ -353,6 +339,26 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 74.46809F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(444, 521);
             this.tableLayoutPanel1.TabIndex = 31;
+            // 
+            // textDisplay
+            // 
+            this.textDisplay.BackColor = System.Drawing.SystemColors.HighlightText;
+            this.textDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textDisplay.Font = new System.Drawing.Font("MS UI Gothic", 25.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.textDisplay.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.textDisplay.Location = new System.Drawing.Point(3, 3);
+            this.textDisplay.MaxLength = 20;
+            this.textDisplay.MinimumSize = new System.Drawing.Size(438, 60);
+            this.textDisplay.Multiline = true;
+            this.textDisplay.Name = "textDisplay";
+            this.textDisplay.ReadOnly = true;
+            this.textDisplay.Size = new System.Drawing.Size(438, 60);
+            this.textDisplay.TabIndex = 0;
+            this.textDisplay.TabStop = false;
+            this.textDisplay.Text = "0";
+            this.textDisplay.TextChanged += new System.EventHandler(this.textDisplay_TextChanged);
+            this.textDisplay.Enter += new System.EventHandler(this.textDisplay_Enter);
             // 
             // tableLayoutPanel2
             // 
@@ -395,8 +401,8 @@
             // 
             // Calculator
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(467, 549);
             this.Controls.Add(this.tableLayoutPanel1);
@@ -410,12 +416,11 @@
             this.tableLayoutPanel1.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox textDisplay;
         private System.Windows.Forms.Button buttonMultiply;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Button buttonDivide;
@@ -439,6 +444,7 @@
         private System.Windows.Forms.Label resultDisplay;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.TextBox textDisplay;
     }
 }
 
