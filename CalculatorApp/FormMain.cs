@@ -29,6 +29,16 @@ namespace CalculatorApp
         private float OriginalFontSize;
 
         /// <summary>
+        /// 
+        /// </summary>
+        private bool EqualsClicked = false;
+
+        /// <summary>
+        /// 計算の結果
+        /// </summary>
+        private double Result;
+
+        /// <summary>
         /// Calculatorクラスのコンストラクタ
         /// </summary>
         public Calculator()
@@ -162,8 +172,10 @@ namespace CalculatorApp
         /// <param name="e">イベント引数</param>
         private void buttonC_Click(object sender, EventArgs e)
         {
-            textDisplay.Text = "0";
-            resultDisplay.Text = "=";
+            textDisplay.Clear();
+            resultDisplay.Text = "0";
+
+            // フォントサイズが小さくなっている場合、「C」ボタンを押すと最初のサイズを戻る
             textDisplay.Font = new Font(textDisplay.Font.FontFamily, OriginalFontSize, textDisplay.Font.Style);
         }
 
@@ -190,9 +202,9 @@ namespace CalculatorApp
 
                 // 最後の演算子の後の値は数値として解釈でき、かつまだ小数点が含まれていない場合場合、小数点を追加する
                 if (double.TryParse(lastNumber, out double lastValue) && !lastNumber.Contains(".") && !currentText.Contains("E"))
-                    {
-                        textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}{lastValue}{dot.Text}";
-                    }
+                {
+                    textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}{lastValue}{dot.Text}";
+                }
             }
         }
 
@@ -251,67 +263,6 @@ namespace CalculatorApp
         }
 
         /// <summary>
-        /// 数字ボタンがクリックされたときの処理を実行する
-        /// </summary>
-        /// <param name="sender">イベントの送信元</param>
-        /// <param name="e">イベント引数</param>
-        private void buttonNumber_Click(object sender, EventArgs e)
-        {
-            Button num = (Button)sender;
-            string currentText = textDisplay.Text;
-
-            // 文字列の最後の値を検索する
-            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
-
-            // テキストが「0」の場合、クリア
-            if (textDisplay.Text == "0")
-            {
-                textDisplay.Clear();
-            }
-            // 最後の文字が「0」で、まだ小数点が含まれておらず、かつ「÷」が含まれている場合、数字を入力出来ない
-            else if ("0".Contains(lastChar) && !currentText.Contains(".") && currentText.Contains("÷")
-                || ")".Contains(lastChar))
-            {
-                return;
-            }
-
-            // ボタンのテキストをテキストボックスに追加
-            textDisplay.Text += num.Text;
-        }
-
-        /// <summary>
-        /// 演算子ボタンがクリックされたときの処理を実行する
-        /// </summary>
-        /// <param name="sender">イベントの送信元</param>
-        /// <param name="e">イベント引数</param>
-        private void btnOperation_Click(object sender, EventArgs e)
-        {
-            Button opr = (Button)sender;
-
-            // ボタンのテキストを Operator 変数に格納します。
-            Operator = opr.Text;
-            string currentText = textDisplay.Text;
-
-            // 文字列の最後の値を検索する
-            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
-
-            // 最後の文字が演算子または小数点の場合、疎の演算を新しい演算子で置き換える
-            if ("+-x÷.".Contains(lastChar))
-            {
-                textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + opr.Text;
-            }
-            // テキストボックスが空の場合、演算子を入力出来ない
-            else if (currentText.Equals(""))
-            {
-                textDisplay.Clear();
-            }
-            else
-            {
-                textDisplay.Text += opr.Text;
-            }
-        }
-
-        /// <summary>
         /// 等しいボタンがクリックされたときの処理を実行する
         /// </summary>
         /// <param name="sender">イベントの送信元</param>
@@ -349,9 +300,9 @@ namespace CalculatorApp
 
                 // データベースのテーブルのようにデータを格納するための DataTable クラスを使用する
                 // そのデータを計算するために Compute メソッドを使用して、結果をdouble型で取得する
-                double result = Convert.ToDouble(new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null));
-                
-                if (double.IsPositiveInfinity(result) || double.IsNegativeInfinity(result) || double.IsNaN(result))
+                Result = Convert.ToDouble(new DataTable().Compute(equation.Replace("÷", "/").Replace("x", "*"), null));
+
+                if (double.IsPositiveInfinity(Result) || double.IsNegativeInfinity(Result) || double.IsNaN(Result))
                 {
                     // 結果が無限大の場合はメッセージを表示する
                     resultDisplay.Text = "Error";
@@ -359,8 +310,7 @@ namespace CalculatorApp
                 }
                 else
                 {
-                    textDisplay.Text = CheckResult(result);
-                    resultDisplay.Text = "=" + textDisplay.Text;
+                    resultDisplay.Text = "=" + CheckResult(Result);
                 }
             }
             catch (DivideByZeroException)
@@ -377,6 +327,83 @@ namespace CalculatorApp
             {
                 resultDisplay.Text = "入力形式が正しくない";
                 textDisplay.Clear();
+            }
+            EqualsClicked = true;
+        }
+
+        /// <summary>
+        /// 数字ボタンがクリックされたときの処理を実行する
+        /// </summary>
+        /// <param name="sender">イベントの送信元</param>
+        /// <param name="e">イベント引数</param>
+        private void buttonNumber_Click(object sender, EventArgs e)
+        {
+            Button num = (Button)sender;
+            string currentText = textDisplay.Text;
+
+            // 文字列の最後の値を検索する
+            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
+
+            // テキストが「0」の場合、クリア
+            if (textDisplay.Text == "0")
+            {
+                textDisplay.Clear();
+            }
+            // 最後の文字が「0」で、まだ小数点が含まれておらず、かつ「÷」が含まれている場合、数字を入力出来ない
+            else if ("0".Contains(lastChar) && !currentText.Contains(".") && currentText.Contains("÷")
+                || ")".Contains(lastChar))
+            {
+                return;
+            }
+
+            if (!EqualsClicked)
+            {
+                textDisplay.Text += num.Text;
+            }
+            else
+            {
+                textDisplay.Clear();
+                textDisplay.Text += num.Text;
+                EqualsClicked = false;
+            }
+        }
+
+        /// <summary>
+        /// 演算子ボタンがクリックされたときの処理を実行する
+        /// </summary>
+        /// <param name="sender">イベントの送信元</param>
+        /// <param name="e">イベント引数</param>
+        private void btnOperation_Click(object sender, EventArgs e)
+        {
+            Button opr = (Button)sender;
+
+            // ボタンのテキストを Operator 変数に格納します。
+            Operator = opr.Text;
+            string currentText = textDisplay.Text;
+
+            // 文字列の最後の値を検索する
+            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
+
+            // 最後の文字が演算子または小数点の場合、疎の演算を新しい演算子で置き換える
+            if ("+-x÷.".Contains(lastChar))
+            {
+                textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + Operator;
+            }
+            // テキストボックスが空の場合、演算子を入力出来ない
+            else if (currentText.Equals(""))
+            {
+                return;
+            }
+
+            if (!EqualsClicked)
+            {
+                textDisplay.Text += Operator;
+            }
+            else
+            {
+                textDisplay.Text = Result.ToString();
+                textDisplay.Text += Operator;
+                EqualsClicked = false;
             }
         }
 

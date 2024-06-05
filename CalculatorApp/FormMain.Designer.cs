@@ -312,12 +312,12 @@
             this.resultDisplay.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.resultDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.resultDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.resultDisplay.Font = new System.Drawing.Font("MS UI Gothic", 19.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.resultDisplay.Font = new System.Drawing.Font("MS UI Gothic", 22.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.resultDisplay.Location = new System.Drawing.Point(3, 66);
             this.resultDisplay.Name = "resultDisplay";
             this.resultDisplay.Size = new System.Drawing.Size(438, 66);
             this.resultDisplay.TabIndex = 0;
-            this.resultDisplay.Text = "=";
+            this.resultDisplay.Text = "0";
             this.resultDisplay.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // tableLayoutPanel1
@@ -356,7 +356,6 @@
             this.textDisplay.Size = new System.Drawing.Size(438, 60);
             this.textDisplay.TabIndex = 0;
             this.textDisplay.TabStop = false;
-            this.textDisplay.Text = "0";
             this.textDisplay.TextChanged += new System.EventHandler(this.textDisplay_TextChanged);
             this.textDisplay.Enter += new System.EventHandler(this.textDisplay_Enter);
             // 
