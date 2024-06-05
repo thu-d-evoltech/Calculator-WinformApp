@@ -29,7 +29,7 @@ namespace CalculatorApp
         private float OriginalFontSize;
 
         /// <summary>
-        /// 
+        /// 等号がクリックしたチェック
         /// </summary>
         private bool EqualsClicked = false;
 
@@ -211,8 +211,8 @@ namespace CalculatorApp
         /// <summary>
         /// パーセントボタンがクリックされたときの処理を実行する
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">イベントの送信元</param>
+        /// <param name="e">イベント引数</param>
         private void buttonPercent_Click(object sender, EventArgs e)
         {
             string currentText = textDisplay.Text;
@@ -304,7 +304,7 @@ namespace CalculatorApp
 
                 if (double.IsPositiveInfinity(Result) || double.IsNegativeInfinity(Result) || double.IsNaN(Result))
                 {
-                    // 結果が無限大の場合はメッセージを表示する
+                    // 結果が無限大または NaN の場合はメッセージを表示する
                     resultDisplay.Text = "Error";
                     textDisplay.Clear();
                 }
@@ -313,16 +313,19 @@ namespace CalculatorApp
                     resultDisplay.Text = "=" + CheckResult(Result);
                 }
             }
+            // 0 による除算の例外を処理する
             catch (DivideByZeroException)
             {
                 resultDisplay.Text = "Error";
                 textDisplay.Clear();
             }
+            // 結果がデータ型の範囲を超えた例外を処理する
             catch (OverflowException)
             {
                 resultDisplay.Text = "数字が大きすぎます";
                 textDisplay.Clear();
             }
+            // 文字列の形式が正しくない例外を処理する
             catch (FormatException)
             {
                 resultDisplay.Text = "入力形式が正しくない";
@@ -358,10 +361,12 @@ namespace CalculatorApp
 
             if (!EqualsClicked)
             {
+                // 等号がクリックしなかった場合、数字を入力する
                 textDisplay.Text += num.Text;
             }
             else
             {
+                // 等号がクリックした場合、テキストボックスの現在のデータが削除されて、新しい演算式を始める
                 textDisplay.Clear();
                 textDisplay.Text += num.Text;
                 EqualsClicked = false;
@@ -397,10 +402,12 @@ namespace CalculatorApp
 
             if (!EqualsClicked)
             {
+                // 等号がクリックしなかった場合、演算子を追加する
                 textDisplay.Text += Operator;
             }
             else
             {
+                // 等号がクリックした場合、前の演算式の結果を取得して、演算子を追加する
                 textDisplay.Text = Result.ToString();
                 textDisplay.Text += Operator;
                 EqualsClicked = false;
@@ -437,21 +444,22 @@ namespace CalculatorApp
             }
             if (textDisplay.Font.Size == 17)
             {
-                // フォント サイズは１７が等しい場合にのみテキストが改行される
+                // フォントサイズは１７が等しい場合にのみテキストが改行される
                 textDisplay.WordWrap = true;
             }
             if (textWidth <= textDisplay.ClientSize.Width)
             {
+                // テキストはテキストボックスの幅を超えない場合、フォントサイズを最初のサイズを戻られる
                 float textSize = textDisplay.Font.Size + 0.5f;
                 textDisplay.Font = new Font(textDisplay.Font.FontFamily, textSize > OriginalFontSize ? OriginalFontSize : textSize, textDisplay.Font.Style);
             }
         }
 
         /// <summary>
-        /// 
+        /// テキストボックスのキャレットを削除するために
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">イベントの送信元</param>
+        /// <param name="e">イベント引数</param>
         private void textDisplay_Enter(object sender, EventArgs e)
         {
             ActiveControl = null;
