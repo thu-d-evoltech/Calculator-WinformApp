@@ -51,16 +51,20 @@ namespace CalculatorApp
         /// テキストから最後の演算子の位置を検索す
         /// </summary>
         /// <returns>最後の演算子の位置。見つからない場合は-1</returns>
-        private int CheckLastOperator()
+        private int GetLastOperatorIndex()
         {
             string currentText = textDisplay.Text;
 
             // '+'、'-'、'x'、'÷'の各演算子が最位置を検索し、
             // 最後に出現する演算子の位置を見つける
-            int lastOperatorIndex = Math.Max(currentText.LastIndexOf("+"),
-                    Math.Max(currentText.LastIndexOf("-"),
-                    Math.Max(currentText.LastIndexOf("x"),
-                    currentText.LastIndexOf("÷"))));
+            var operatorIndexes = new[] 
+            {
+                currentText.LastIndexOf("+"),
+                currentText.LastIndexOf("-"),
+                currentText.LastIndexOf("x"),
+                currentText.LastIndexOf("÷")
+            };
+            int lastOperatorIndex = operatorIndexes.Max();
 
             // 最後の演算子の位置を返す
             return lastOperatorIndex;
@@ -71,7 +75,7 @@ namespace CalculatorApp
         /// </summary>
         /// <param name="Value">チェックする数値</param>
         /// <returns>適切な形式の文字列に変換した結果</returns>
-        private string CheckResult(double Value)
+        private string ConvertDecimalToEuler(double Value)
         {
             if (Math.Abs(Value) < 1e-10 || Math.Abs(Value) > 1e12)
             {
@@ -87,6 +91,18 @@ namespace CalculatorApp
         }
 
         /// <summary>
+        /// 文字列の最後の値を検索するメソッド
+        /// </summary>
+        /// <returns>文字列の最後の値</returns>
+        private string GetLastCharIndex()
+        {
+            string currentText = textDisplay.Text;
+
+            string lastChar = currentText.Length > 0 ? currentText.Last().ToString(): " ";
+            return lastChar;
+        }
+
+        /// <summary>
         /// テキストボックスの最後の文字を削除するボタン
         /// </summary>
         /// <param name="sender">イベントの発生元</param>
@@ -96,14 +112,12 @@ namespace CalculatorApp
             string currentText = textDisplay.Text;
 
             // 文字列の最後の値を検索する
-            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
+            GetLastCharIndex();
 
             // 最後の文字が右括弧の場合は削除できない
-            if (")".Contains(lastChar))
-            {
-                return;
-            }
-            else if (currentText.Length > 0)
+            if (GetLastCharIndex().Equals(")")) return;
+
+            if (currentText.Length > 0)
             {
                 // 最後の文字を削除
                 textDisplay.Text = currentText.Remove(currentText.Length - 1, 1);
@@ -120,7 +134,7 @@ namespace CalculatorApp
             string currentText = textDisplay.Text;
 
             // 小数点で終わっていて最後の演算子が存在しない場合、先頭にマイナスを追加
-            if (currentText.Contains(".") && CheckLastOperator() == -1)
+            if (currentText.Contains(".") && GetLastOperatorIndex() == -1)
             {
                 textDisplay.Text = "-" + currentText;
             }
@@ -138,30 +152,30 @@ namespace CalculatorApp
                 }
             }
             // テキストボックスで演算子もある場合
-            else if (CheckLastOperator() != -1)
+            else if (GetLastOperatorIndex() != -1)
             {
                 // 最後の演算子の後の値
-                string lastNumber = currentText.Substring(CheckLastOperator() + 1);
+                string lastNumber = currentText.Substring(GetLastOperatorIndex() + 1);
 
                 // 最後の演算子の前に別の演算子が存在しない場合
-                if (currentText[CheckLastOperator() - 1].ToString() != Operator)
+                if (currentText[GetLastOperatorIndex() - 1].ToString() != Operator)
                 {
                     if (lastNumber.Contains("."))
                     {
                         // 最後の演算子の後の値に小数点が含まれる場合、値の前にマイナス記号を追加する
-                        textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}-{lastNumber}";
+                        textDisplay.Text = $"{currentText.Substring(0, GetLastOperatorIndex() + 1)}-{lastNumber}";
                     }
                     else if (double.TryParse(lastNumber, out double lastValue))
                     {
                         // 最後の演算子の後の値は数値として解釈できる場合、その値の符号を反転
                         NegateValue = -lastValue;
-                        textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}{NegateValue}";
+                        textDisplay.Text = $"{currentText.Substring(0, GetLastOperatorIndex() + 1)}{NegateValue}";
                     }
                 }
                 else
                 {
                     // 最後の演算子の前に別の演算子が存在する場合、マイナス記号を削除する
-                    textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator())}{lastNumber}";
+                    textDisplay.Text = $"{currentText.Substring(0, GetLastOperatorIndex())}{lastNumber}";
                 }
             }
         }
@@ -199,12 +213,12 @@ namespace CalculatorApp
             else
             {
                 // 最後の演算子の後の値
-                string lastNumber = currentText.Substring(CheckLastOperator() + 1);
+                string lastNumber = currentText.Substring(GetLastOperatorIndex() + 1);
 
                 // 最後の演算子の後の値は数値として解釈でき、かつまだ小数点が含まれていない場合場合、小数点を追加する
                 if (double.TryParse(lastNumber, out double lastValue) && !lastNumber.Contains(".") && !currentText.Contains("E"))
                 {
-                    textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}{lastValue}{dot.Text}";
+                    textDisplay.Text = $"{currentText.Substring(0, GetLastOperatorIndex() + 1)}{lastValue}{dot.Text}";
                 }
             }
         }
@@ -225,12 +239,12 @@ namespace CalculatorApp
             if (double.TryParse(currentText, out double inputValue))
             {
                 PercentValue = inputValue / 100;
-                textDisplay.Text = CheckResult(PercentValue);
+                textDisplay.Text = ConvertDecimalToEuler(PercentValue);
             }
             else
             {
                 // 最後の演算子の後の数字を取得
-                string lastNumber = currentText.Substring(CheckLastOperator() + 1);
+                string lastNumber = currentText.Substring(GetLastOperatorIndex() + 1);
 
                 // 最後の演算子の後の数字が数値に変換できる場合、その数値のパーセントを計算する
                 if (double.TryParse(lastNumber, out double lastValue))
@@ -238,7 +252,7 @@ namespace CalculatorApp
                     PercentValue = lastValue / 100;
 
                     // パーセンテージの結果を括弧内に入れて、テキストボックスに表示す
-                    textDisplay.Text = $"{currentText.Substring(0, CheckLastOperator() + 1)}({CheckResult(PercentValue)})";
+                    textDisplay.Text = $"{currentText.Substring(0, GetLastOperatorIndex() + 1)}({ConvertDecimalToEuler(PercentValue)})";
                 }
                 // 開き括弧がある場合
                 else if (openParenthes != -1)
@@ -256,7 +270,7 @@ namespace CalculatorApp
                             PercentValue = valueInParentheses / 100;
 
                             // パーセンテージの結果を括弧内に入れて、テキストボックスに表示す
-                            textDisplay.Text = currentText.Substring(0, openParenthes + 1) + CheckResult(PercentValue) + currentText.Substring(closeParenthes);
+                            textDisplay.Text = currentText.Substring(0, openParenthes + 1) + ConvertDecimalToEuler(PercentValue) + currentText.Substring(closeParenthes);
                         }
                     }
                 }
@@ -271,19 +285,18 @@ namespace CalculatorApp
         private void buttonEquals_Click(object sender, EventArgs e)
         {
             string currentText = textDisplay.Text;
+            string errorMess = "Error";
 
             // 文字列の最後の値を検索する
-            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
+            string lastChar = GetLastCharIndex();
+
+            // 現在のテキストが空の場合、処理を中断する
+            if (currentText == "") return;
 
             if ("+-x÷".Contains(lastChar))
             {
                 // 最後の文字は演算子の場合、その演算子を削除する
                 textDisplay.Text = currentText.Substring(0, currentText.Length - 1);
-            }
-            // 現在のテキストが空の場合、処理を中断する
-            else if (currentText == "")
-            {
-                return;
             }
 
             // 計算式を準備します。"/"と"*"をそれぞれフォームの"÷"と"x"に置換する
@@ -293,7 +306,7 @@ namespace CalculatorApp
             try
             {
                 // 最後の文字が"E"を含む場合、数値eの値を計算し、"E"をその値に置換します。
-                if (lastChar.Contains("E"))
+                if (lastChar.Equals("E"))
                 {
                     // 最後の文字が"E"を含む場合、"E"の値を計算する
                     equation = equation.Replace("E", $"*{Math.Exp(1)}");
@@ -306,18 +319,18 @@ namespace CalculatorApp
                 if (double.IsPositiveInfinity(Result) || double.IsNegativeInfinity(Result) || double.IsNaN(Result))
                 {
                     // 結果が無限大または NaN の場合はメッセージを表示する
-                    resultDisplay.Text = "Error";
+                    resultDisplay.Text = errorMess;
                     textDisplay.Clear();
                 }
                 else
                 {
-                    resultDisplay.Text = "=" + CheckResult(Result);
+                    resultDisplay.Text = "=" + ConvertDecimalToEuler(Result);
                 }
             }
             // 0 による除算の例外を処理する
             catch (DivideByZeroException)
             {
-                resultDisplay.Text = "Error";
+                resultDisplay.Text = errorMess;
                 textDisplay.Clear();
             }
             // 結果がデータ型の範囲を超えた例外を処理する
@@ -346,7 +359,7 @@ namespace CalculatorApp
             string currentText = textDisplay.Text;
 
             // 文字列の最後の値を検索する
-            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
+            string lastChar = GetLastCharIndex();
 
             // テキストが「0」の場合、クリア
             if (textDisplay.Text == "0")
@@ -354,11 +367,8 @@ namespace CalculatorApp
                 textDisplay.Clear();
             }
             // 最後の文字が「0」で、まだ小数点が含まれておらず、かつ「÷」が含まれている場合、数字を入力出来ない
-            else if ("0".Contains(lastChar) && !currentText.Contains(".") && currentText.Contains("÷")
-                || ")".Contains(lastChar))
-            {
+            if (lastChar.Equals("0") && !currentText.Contains(".") && currentText.Contains("÷") || lastChar.Equals(")")) 
                 return;
-            }
 
             if (!EqualsClicked)
             {
@@ -388,17 +398,15 @@ namespace CalculatorApp
             string currentText = textDisplay.Text;
 
             // 文字列の最後の値を検索する
-            string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
+            string lastChar = GetLastCharIndex();
+
+            // テキストボックスが空の場合、演算子を入力出来ない
+            if (currentText.Equals("")) return;
 
             // 最後の文字が演算子または小数点の場合、疎の演算を新しい演算子で置き換える
             if ("+-x÷.".Contains(lastChar))
             {
                 textDisplay.Text = currentText.Substring(0, currentText.Length - 1) + Operator;
-            }
-            // テキストボックスが空の場合、演算子を入力出来ない
-            else if (currentText.Equals(""))
-            {
-                return;
             }
 
             if (!EqualsClicked)
