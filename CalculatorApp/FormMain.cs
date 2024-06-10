@@ -75,13 +75,13 @@ namespace CalculatorApp
         {
             if (Math.Abs(Value) < 1e-10 || Math.Abs(Value) > 1e12)
             {
-                // 数値の絶対値は1e-10より小さい場合、数値は指数として返す
+                // 数値の絶対値は "1e-10" より小さい場合、数値は指数として返す
                 return Value.ToString("G10");
             }
             else
             {
                 // それ以外の場合、数値は10進数として返す
-                // 不要な末尾のゼロと小数点を削除す
+                // 不要な末尾の "0"と小数点を削除す
                 return Value.ToString("F20").TrimEnd('0').TrimEnd('.');
             }
         }
@@ -98,6 +98,7 @@ namespace CalculatorApp
             // 文字列の最後の値を検索する
             string lastChar = currentText.Length > 0 ? currentText.Last().ToString() : " ";
 
+            // 最後の文字が右括弧の場合は削除できない
             if (")".Contains(lastChar))
             {
                 return;
